@@ -2,21 +2,21 @@ import logging
 
 import click
 
-from stactools.ephemeral import stac
+from stactools.stactools_palsar import stac
 
 logger = logging.getLogger(__name__)
 
 
-def create_ephemeralcmd_command(cli):
-    """Creates the stactools-ephemeral command line utility."""
+def create_stactoolspalsar_command(cli):
+    """Creates the stactools-stactools-palsar command line utility."""
     @cli.group(
-        "ephemeralcmd",
-        short_help=("Commands for working with stactools-ephemeral"),
+        "stactoolspalsar",
+        short_help=("Commands for working with stactools-stactools-palsar"),
     )
-    def ephemeralcmd():
+    def stactoolspalsar():
         pass
 
-    @ephemeralcmd.command(
+    @stactoolspalsar.command(
         "create-collection",
         short_help="Creates a STAC collection",
     )
@@ -35,7 +35,7 @@ def create_ephemeralcmd_command(cli):
 
         return None
 
-    @ephemeralcmd.command("create-item", short_help="Create a STAC item")
+    @stactoolspalsar.command("create-item", short_help="Create a STAC item")
     @click.argument("source")
     @click.argument("destination")
     def create_item_command(source: str, destination: str):
@@ -51,4 +51,4 @@ def create_ephemeralcmd_command(cli):
 
         return None
 
-    return ephemeralcmd
+    return stactoolspalsar
