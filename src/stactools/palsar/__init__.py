@@ -9,7 +9,7 @@ stactools.core.use_fsspec()
 
 def register_plugin(registry):
     from stactools.palsar import commands
-    registry.register_subcommand(commands.create_stactoolspalsar_command)
+    registry.register_subcommand(commands.create_palsar_command)
 
 
 __version__ = "0.1.0"

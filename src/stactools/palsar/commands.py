@@ -7,17 +7,17 @@ from stactools.palsar import stac
 logger = logging.getLogger(__name__)
 
 
-def create_stactoolspalsar_command(cli):
+def create_palsar_command(cli):
     """Creates the stactools-palsar command line utility."""
-    
+
     @cli.group(
-        "stactoolspalsar",
+        "palsar",
         short_help=("Commands for working with stactools-palsar"),
     )
-    def stactoolspalsar():
+    def palsar():
         pass
 
-    @stactoolspalsar.command(
+    @palsar.command(
         "create-collection",
         short_help="Creates a STAC collection",
     )
@@ -36,7 +36,7 @@ def create_stactoolspalsar_command(cli):
 
         return None
 
-    @stactoolspalsar.command("create-item", short_help="Create a STAC item")
+    @palsar.command("create-item", short_help="Create a STAC item")
     @click.argument("source")
     @click.argument("destination")
     def create_item_command(source: str, destination: str):
@@ -52,4 +52,4 @@ def create_stactoolspalsar_command(cli):
 
         return None
 
-    return stactoolspalsar
+    return palsar
