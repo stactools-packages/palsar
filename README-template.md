@@ -1,10 +1,10 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/stactools-palsar/main?filepath=docs/installation_and_basic_usage.ipynb)
 
-# stactools-stactools-palsar
+# stactools-palsar
 
 - Name: stactools-palsar
 - Package: `stactools.palsar`
-- PyPI: https://pypi.org/project/stactools-stactools-palsar/
+- PyPI: https://pypi.org/project/stactools-palsar/
 - Owner: @githubusername
 - Dataset homepage: http://example.com
 - STAC extensions used:

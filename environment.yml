@@ -1,4 +1,4 @@
-name: stactools-stactools-palsar
+name: stactools-palsar
 channels:
   - conda-forge
   - defaults

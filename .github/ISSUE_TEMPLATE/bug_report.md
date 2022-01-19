@@ -15,7 +15,7 @@ Steps to reproduce the behavior:
 
 > Ex.
 >
-> 1. Install stactools-stactools-palsar
+> 1. Install stactools-palsar
 > 2. Run `scripts/test`
 > 3. See error
 

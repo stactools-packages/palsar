@@ -13,4 +13,4 @@ sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
 types-click
 types-pytz
-yapf
+yapf==0.32.0

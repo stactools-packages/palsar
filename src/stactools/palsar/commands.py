@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 def create_stactoolspalsar_command(cli):
-    """Creates the stactools-stactools-palsar command line utility."""
+    """Creates the stactools-palsar command line utility."""
     @cli.group(
         "stactoolspalsar",
-        short_help=("Commands for working with stactools-stactools-palsar"),
+        short_help=("Commands for working with stactools-palsar"),
     )
     def stactoolspalsar():
         pass
