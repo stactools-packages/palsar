@@ -8,6 +8,7 @@ from stactools.palsar.commands import create_stactoolspalsar_command
 
 
 class CommandsTest(CliTestCase):
+    
     def create_subcommand_functions(self):
         return [create_stactoolspalsar_command]
 
