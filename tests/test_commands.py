@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import pystac
 from stactools.testing import CliTestCase
 
-from stactools.stactools_palsar.commands import create_stactoolspalsar_command
+from stactools.palsar.commands import create_stactoolspalsar_command
 
 
 class CommandsTest(CliTestCase):

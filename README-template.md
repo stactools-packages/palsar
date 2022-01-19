@@ -3,7 +3,7 @@
 # stactools-stactools-palsar
 
 - Name: stactools-palsar
-- Package: `stactools.stactools_palsar`
+- Package: `stactools.palsar`
 - PyPI: https://pypi.org/project/stactools-stactools-palsar/
 - Owner: @githubusername
 - Dataset homepage: http://example.com

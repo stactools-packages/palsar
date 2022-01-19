@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from stactools.stactools_palsar import stac
+from stactools.palsar import stac
 
 logger = logging.getLogger(__name__)
 

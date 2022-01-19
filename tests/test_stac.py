@@ -1,6 +1,6 @@
 import unittest
 
-from stactools.stactools_palsar import stac
+from stactools.palsar import stac
 
 
 class StacTest(unittest.TestCase):
