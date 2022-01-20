@@ -1,16 +1,15 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/stactools-palsar/main?filepath=docs/installation_and_basic_usage.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/palsar/main?filepath=docs/installation_and_basic_usage.ipynb)
 
 # stactools-palsar
 
 - Name: stactools-palsar
 - Package: `stactools.palsar`
 - PyPI: https://pypi.org/project/stactools-palsar/
-- Owner: @githubusername
-- Dataset homepage: http://example.com
+- Owner: @wildintellect
+- Dataset homepage: https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm
 - STAC extensions used:
   - [proj](https://github.com/stac-extensions/projection/)
-- Extra fields:
-  - `stactools-palsar:custom`: A custom attribute
+- Extra fields: none
 
 A short description of the package and its usage.
 
@@ -26,7 +25,7 @@ A short description of the package and its usage.
 Description of the command line functions
 
 ```bash
-$ stac stactools-palsar create-item source destination
+$ stac palsar create-item source destination
 ```
 
-Use `stac stactools-palsar --help` to see all subcommands and options.
+Use `stac palsar --help` to see all subcommands and options.
