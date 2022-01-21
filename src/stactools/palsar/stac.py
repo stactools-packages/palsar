@@ -7,6 +7,9 @@ from pystac.extensions.projection import ProjectionExtension
 
 logger = logging.getLogger(__name__)
 
+from stactools.palsar.constants import (ALOS_PALSAR_PLATFORM,ALOS_PALSAR_INSTRUMENTS,
+                                        ALOS_PALSAR_GSD, ALOS_PALSAR_EPSG,ALOS_PALSAR_PROVIDERS,
+                                        ALOS_PALSAR_LINKS) 
 
 def create_collection() -> Collection:
     """Create a STAC Collection
@@ -20,16 +23,7 @@ def create_collection() -> Collection:
     Returns:
         Collection: STAC Collection object
     """
-    providers = [
-        Provider(
-            name="The OS Community",
-            roles=[
-                ProviderRole.PRODUCER, ProviderRole.PROCESSOR,
-                ProviderRole.HOST
-            ],
-            url="https://github.com/stac-utils/stactools",
-        )
-    ]
+    providers = ALOS_PALSAR_PROVIDERS
 
     # Time must be in UTC
     demo_time = datetime.now(tz=timezone.utc)
@@ -40,6 +34,7 @@ def create_collection() -> Collection:
     )
 
     collection = Collection(
+    ## TODO: set in constants
         id="my-collection-id",
         title="A dummy STAC Collection",
         description="Used for demonstration purposes",
@@ -66,6 +61,9 @@ def create_item(asset_href: str) -> Item:
     Returns:
         Item: STAC Item object
     """
+
+    # For assets in item loop over
+    # ["date","xml","linci", "mask", "sl_HH", "sl_HV"]
 
     properties = {
         "title": "A dummy STAC Item",
