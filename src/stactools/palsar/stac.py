@@ -7,9 +7,12 @@ from pystac.extensions.projection import ProjectionExtension
 
 logger = logging.getLogger(__name__)
 
-from stactools.palsar.constants import (ALOS_PALSAR_PLATFORM,ALOS_PALSAR_INSTRUMENTS,
-                                        ALOS_PALSAR_GSD, ALOS_PALSAR_EPSG,ALOS_PALSAR_PROVIDERS,
-                                        ALOS_PALSAR_LINKS) 
+from stactools.palsar.constants import (ALOS_PALSAR_EPSG, ALOS_PALSAR_GSD,
+                                        ALOS_PALSAR_INSTRUMENTS,
+                                        ALOS_PALSAR_LINKS,
+                                        ALOS_PALSAR_PLATFORM,
+                                        ALOS_PALSAR_PROVIDERS)
+
 
 def create_collection() -> Collection:
     """Create a STAC Collection
@@ -34,7 +37,7 @@ def create_collection() -> Collection:
     )
 
     collection = Collection(
-    ## TODO: set in constants
+        ## TODO: set in constants
         id="my-collection-id",
         title="A dummy STAC Collection",
         description="Used for demonstration purposes",

@@ -2,8 +2,7 @@ import logging
 
 import click
 
-from stactools.palsar import stac
-from stactools.palsar import cog
+from stactools.palsar import cog, stac
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +57,7 @@ def create_palsar_command(cli):
             cogs = cog.cogify(source, destination)
         else:
             cogs = {}
-        
+
         # TODO: pass COGs to create_item, as assets list
         #item = stac.create_item(source)
 

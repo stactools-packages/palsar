@@ -1,4 +1,4 @@
-from pystac import Provider, Link
+from pystac import Link, Provider
 
 ALOS_PALSAR_PLATFORM = "alos-2/alos"
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR-2", "PALSAR"]
@@ -10,12 +10,11 @@ ALOS_PALSAR_PROVIDERS = [
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
 ]
 ALOS_PALSAR_LINKS = [
-    Link("handbook",
-         "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_FNF_revK.pdf",
-         "application/pdf",
-         "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF) Dataset Description",
-         extra_fields={"description": "Also includes data usage information"})
+    Link(
+        "handbook",
+        "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_FNF_revK.pdf",
+        "application/pdf",
+        "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF) Dataset Description",
+        extra_fields={"description": "Also includes data usage information"})
 ]
-ALOS_PALSAR_BANDS = {
-
-}
+ALOS_PALSAR_BANDS = {}

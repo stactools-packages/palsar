@@ -2,15 +2,16 @@ import logging
 import os
 import subprocess
 
-from stactools.palsar.utils import extract_archive,palsar_folder_parse
 from stactools.palsar.errors import CogifyError
+from stactools.palsar.utils import extract_archive, palsar_folder_parse
 
 logger = logging.getLogger(__name__)
+
 
 def cogify(tile_path: str, output_directory: str):
     """
     Given tile_path to a tile (1x1 degree) folder or tar.gz?
-    Convert each band to a COG, save to output_directory 
+    Convert each band to a COG, save to output_directory
     """
 
     #Extract tar.gz
@@ -27,7 +28,7 @@ def cogify(tile_path: str, output_directory: str):
     for variable in src_files:
         #Create a cog filename
         if (not variable.endswith('.tif')):
-            cog_name = ".".join([variable,'tif'])
+            cog_name = ".".join([variable, 'tif'])
         else:
             cog_name = variable
 

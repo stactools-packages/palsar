@@ -2,12 +2,13 @@ import os
 import tarfile
 from typing import List
 
+
 def extract_archive(archive: str) -> str:
     """
     Extract tar.gz
     return the folder
     """
-    output_directory = archive.replace('.tar.gz','')
+    output_directory = archive.replace('.tar.gz', '')
 
     file = tarfile.open(archive)
     file.extractall(output_directory)
@@ -15,19 +16,21 @@ def extract_archive(archive: str) -> str:
 
     return output_directory
 
+
 def palsar_name_parse(filename: str):
     """
-    Parse palsar file name into components 
+    Parse palsar file name into components
     TileName (NLat ELong) - LLLLLLL
     Year - YY
     Band - sl_HH, sl_HV, date, linci, mask
-    F02DAR - constant: 
-        F- Full Beam, 
-        02 Beam number, 
-        D - Dual polarization, 
-        O - ascending oribit, 
-        R right observation 
+    F02DAR - constant:
+        F- Full Beam,
+        02 Beam number,
+        D - Dual polarization,
+        O - ascending oribit,
+        R right observation
     """
+
 
 def palsar_folder_parse(directory: str) -> List:
     """
