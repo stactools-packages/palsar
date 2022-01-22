@@ -14,15 +14,15 @@ def cogify(tile_path: str, output_directory: str):
     Convert each band to a COG, save to output_directory
     """
 
-    #Extract tar.gz
+    # Extract tar.gz
     directory = extract_archive(tile_path)
     # If name contains MOS it's mosaic, FNF forest/non
     # FNF is simpler 1 band
     # collect valid data file names
     src_files = palsar_folder_parse(directory)
-    ## Newer years (2019+) has xml file, ignore
-    ## Pre 2019, look for .hdr files, then remove hdr for actual file to use
-    ## for each valid file convert to cog
+    # Newer years (2019+) has xml file, ignore
+    # Pre 2019, look for .hdr files, then remove hdr for actual file to use
+    # for each valid file convert to cog
     cog_files = []
     cogs = {}
     for variable in src_files:
@@ -56,5 +56,5 @@ def cogify(tile_path: str, output_directory: str):
             logger.info(result.stderr.decode('utf-8').strip())
         cogs[variable] = outfile
 
-    #return list of cogs by band
+    # return list of cogs by band
     return cogs
