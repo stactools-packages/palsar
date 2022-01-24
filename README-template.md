@@ -1,16 +1,16 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/ephemeral/main?filepath=docs/installation_and_basic_usage.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/palsar/main?filepath=docs/installation_and_basic_usage.ipynb)
 
-# stactools-ephemeral
+# stactools-palsar
 
-- Name: ephemeral
-- Package: `stactools.ephemeral`
-- PyPI: https://pypi.org/project/stactools-ephemeral/
-- Owner: @githubusername
-- Dataset homepage: http://example.com
+- Name: stactools-palsar
+- Package: `stactools.palsar`
+- PyPI: https://pypi.org/project/stactools-palsar/
+- Owner: @wildintellect
+- Dataset homepage:
+  - https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm
 - STAC extensions used:
   - [proj](https://github.com/stac-extensions/projection/)
-- Extra fields:
-  - `ephemeral:custom`: A custom attribute
+- Extra fields: none
 
 A short description of the package and its usage.
 
@@ -26,7 +26,7 @@ A short description of the package and its usage.
 Description of the command line functions
 
 ```bash
-$ stac ephemeral create-item source destination
+$ stac palsar create-item source destination
 ```
 
-Use `stac ephemeral --help` to see all subcommands and options.
+Use `stac palsar --help` to see all subcommands and options.
