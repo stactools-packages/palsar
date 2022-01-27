@@ -1,11 +1,13 @@
 import logging
 
 import azure.functions as func
+import time
 from stactools.palsar import cog
 from azure.storage.blob import BlobServiceClient
 import os
 
 def main(msg: func.QueueMessage) -> None:
+    start_time = time.time()
     body = msg.get_body().decode('utf-8')
     if body[0] == '/':
         filename = body[1:]
@@ -37,3 +39,7 @@ def main(msg: func.QueueMessage) -> None:
                 except Exception as e:
                     logging.info("Exception for " + temp_path)
                 os.remove(temp_path)
+
+        end_time = time.time()
+        logging.info(f"Runtime is {end_time - start_time}")
+        logging.info("All wrapped up. Exiting")
