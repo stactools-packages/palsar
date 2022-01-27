@@ -26,13 +26,16 @@ def main(msg: func.QueueMessage) -> None:
         cogs = cog.cogify(target_path, '/tmp')
         logging.info('Saved COGs at' + str(cogs))
         for cogfile in cogs:
-            blob_client = blob_service_client.get_blob_client(container="output", blob=cogfile)
+            _, tail = os.path.split(cogfile)
+            
+            dir, _ = os.path.split(filename)
+            blob_client = blob_service_client.get_blob_client(container="output", blob=dir + '/' + tail)
             # Upload the created file
             temp_path = cogfile
             with open(temp_path, "rb") as data:
                 try:
-                    blob_client.upload_blob(data)
-                    logging.info("Success for " + temp_path)
+                    blob_client.upload_blob(data, overwrite = True)
+                    logging.info("Success for " + temp_path + "@" + dir + tail)
                 except Exception as e:
                     logging.info("Exception for " + temp_path)
                 os.remove(temp_path)

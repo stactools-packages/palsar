@@ -4,5 +4,6 @@
 
 azure-functions
 azure-storage-blob
+azure-storage-queue
 rio-cogeo
 git+https://github.com/developmentseed/stactools-palsar.git@feat/cog
