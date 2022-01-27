@@ -5,4 +5,4 @@
 azure-functions
 azure-storage-blob
 rio-cogeo
-stactools-palsar@feat/cog
+git+https://github.com/developmentseed/stactools-palsar.git@feat/cog

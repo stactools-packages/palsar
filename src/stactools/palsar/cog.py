@@ -26,8 +26,7 @@ def cogify(tile_path: str, output_directory: str):
     # Newer years (2019+) has xml file, ignore
     # Pre 2019, look for .hdr files, then remove hdr for actual file to use
     # for each valid file convert to cog
-    cog_files = []
-    cogs = {}
+    cogs = []
     for variable in src_files:
         #Create a cog filename
         if (not variable.endswith('.tif')):
@@ -38,19 +37,6 @@ def cogify(tile_path: str, output_directory: str):
         logger.info(f"Creating COG for variable {variable}")
         outfile = os.path.join(output_directory, cog_name)
         infile = os.path.join(directory, variable)
-
-        # args = []
-        # args.append("gdal_translate")
-        # args.extend([
-        #     "-of",
-        #     "COG",
-        #     "-co",
-        #     "compress=deflate",
-        # ])
-        # args.extend([infile, outfile])
-
-        # logger.info(f"Running {args}")
-        # result = subprocess.run(args, capture_output=True)
 
         output_profile = cog_profiles.get("deflate")
         output_profile.update(dict(BIGTIFF="IF_SAFER"))
@@ -72,7 +58,7 @@ def cogify(tile_path: str, output_directory: str):
             quiet=True,
         )
         logging.info("Wrote out to " + outfile)
-        cogs[variable] = outfile
+        cogs.append(outfile)
 
     # return list of cogs by band
     return cogs

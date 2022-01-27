@@ -1,7 +1,7 @@
 import logging
 
 import azure.functions as func
-from stactools.palsar import cog 
+from stactools.palsar import cog
 from azure.storage.blob import BlobServiceClient
 import os
 
@@ -22,5 +22,17 @@ def main(msg: func.QueueMessage) -> None:
         target_path = '/tmp/' + file
         with open(target_path, 'wb') as target_file:
             bd.readinto(target_file)
-        logging.info('Saved ' + target_path)
-        cog.cogify(target_path, '/tmp/dogglet')
+        logging.info('Saved input at ' + target_path)
+        cogs = cog.cogify(target_path, '/tmp')
+        logging.info('Saved COGs at' + str(cogs))
+        for cogfile in cogs:
+            blob_client = blob_service_client.get_blob_client(container="output", blob=cogfile)
+            # Upload the created file
+            temp_path = cogfile
+            with open(temp_path, "rb") as data:
+                try:
+                    blob_client.upload_blob(data)
+                    logging.info("Success for " + temp_path)
+                except Exception as e:
+                    logging.info("Exception for " + temp_path)
+                os.remove(temp_path)
