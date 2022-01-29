@@ -1,11 +1,10 @@
 import logging
 import os
-import subprocess
 
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 
-from stactools.palsar.errors import CogifyError
+# from stactools.palsar.errors import CogifyError
 from stactools.palsar.utils import extract_archive, palsar_folder_parse
 
 logger = logging.getLogger(__name__)
@@ -28,7 +27,7 @@ def cogify(tile_path: str, output_directory: str):
     # for each valid file convert to cog
     cogs = []
     for variable in src_files:
-        #Create a cog filename
+        # Create a cog filename
         if (not variable.endswith('.tif')):
             cog_name = ".".join([variable, 'tif'])
         else:

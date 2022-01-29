@@ -1,10 +1,12 @@
 import logging
+import os
+import time
 
 import azure.functions as func
-import time
-from stactools.palsar import cog
 from azure.storage.blob import BlobServiceClient
-import os
+
+from stactools.palsar import cog
+
 
 def main(msg: func.QueueMessage) -> None:
     start_time = time.time()
@@ -13,9 +15,12 @@ def main(msg: func.QueueMessage) -> None:
         filename = body[1:]
     else:
         filename = body
-    logging.info('Python queue trigger function processed a queue item: %s', body)
-    blob_service_client = BlobServiceClient.from_connection_string(os.environ["AzureWebJobsStorage"])
-    blob_client = blob_service_client.get_blob_client(container="dltest", blob=filename)
+    logging.info('Python queue trigger function processed a queue item: %s',
+                 body)
+    blob_service_client = BlobServiceClient.from_connection_string(
+        os.environ["AzureWebJobsStorage"])
+    blob_client = blob_service_client.get_blob_client(container="dltest",
+                                                      blob=filename)
     dir, _ = os.path.split(filename)
     if blob_client.exists():
         bd = blob_client.download_blob()
@@ -29,15 +34,16 @@ def main(msg: func.QueueMessage) -> None:
         logging.info('Saved COGs at' + str(cogs))
         for cogfile in cogs:
             _, tail = os.path.split(cogfile)
-            blob_client = blob_service_client.get_blob_client(container="output", blob=dir + '/' + tail)
+            blob_client = blob_service_client.get_blob_client(
+                container="output", blob=dir + '/' + tail)
             # Upload the created file
             temp_path = cogfile
             with open(temp_path, "rb") as data:
                 try:
-                    blob_client.upload_blob(data, overwrite = True)
+                    blob_client.upload_blob(data, overwrite=True)
                     logging.info("Success for " + temp_path + "@" + dir + tail)
                 except Exception as e:
-                    logging.info("Exception for " + temp_path)
+                    logging.info(f"Exception {e} for {temp_path}")
                 os.remove(temp_path)
 
         end_time = time.time()
