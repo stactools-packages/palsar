@@ -15,31 +15,31 @@ class CogTest(unittest.TestCase):
         with TemporaryDirectory() as directory:
             cogs = cog.cogify(tile_path=path, output_directory=directory)
 
-            hv_path = cogs["sl_HV"]
+            hv_path = cogs[2]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HV')),
                 os.path.basename(hv_path))
 
-            hh_path = cogs["sl_HH"]
+            hh_path = cogs[3]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HH')),
                 os.path.basename(hh_path))
 
-            linci_path = cogs["linci"]
+            linci_path = cogs[0]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'lini')),
                 os.path.basename(linci_path))
 
-            date_path = cogs["date"]
+            date_path = cogs[4]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'date')),
                 os.path.basename(date_path))
 
-            mask_path = cogs["mask"]
+            mask_path = cogs[1]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'mask')),
