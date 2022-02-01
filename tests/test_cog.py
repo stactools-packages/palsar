@@ -11,7 +11,7 @@ class CogTest(unittest.TestCase):
 
     def test_cogify(self):
         # Fix path to data in the package
-        path = test_data.get_external_data(ALOS2_PALSAR_MOS_FILENAME)
+        path = test_data.get_path(ALOS2_PALSAR_MOS_FILENAME)
         with TemporaryDirectory() as directory:
             cogs = cog.cogify(tile_path=path, output_directory=directory)
 
