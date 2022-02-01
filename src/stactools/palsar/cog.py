@@ -1,8 +1,8 @@
 import logging
 import os
 
-from rio_cogeo.cogeo import cog_translate
-from rio_cogeo.profiles import cog_profiles
+from rio_cogeo.cogeo import cog_translate  # type: ignore
+from rio_cogeo.profiles import cog_profiles  # type: ignore
 
 # from stactools.palsar.errors import CogifyError
 from stactools.palsar.utils import extract_archive, palsar_folder_parse

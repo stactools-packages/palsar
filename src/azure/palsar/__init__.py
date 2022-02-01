@@ -2,8 +2,8 @@ import logging
 import os
 import time
 
-import azure.functions as func
-from azure.storage.blob import BlobServiceClient
+import azure.functions as func  # type: ignore
+from azure.storage.blob import BlobServiceClient  # type: ignore
 
 from stactools.palsar import cog
 

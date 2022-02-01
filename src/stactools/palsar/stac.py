@@ -2,11 +2,11 @@ import logging
 import os
 from datetime import datetime, timezone
 
-import rasterio
+import rasterio  # type: ignore
 from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
                     SpatialExtent, TemporalExtent)
 from pystac.extensions.projection import ProjectionExtension
-from shapely.geometry import box, mapping
+from shapely.geometry import box, mapping  # type: ignore
 
 from stactools.palsar.constants import (ALOS_PALSAR_EPSG, ALOS_PALSAR_GSD,
                                         ALOS_PALSAR_INSTRUMENTS,
@@ -44,10 +44,11 @@ def create_collection() -> Collection:
 
     collection = Collection(
         # TODO: set in constants
-        id="my-collection-id",
-        title="A dummy STAC Collection",
-        description="Used for demonstration purposes",
-        license="CC-0",
+        id="alos_palsar_mosaic",
+        title="ALOS PALSAR Annual Mosaic",
+        description='''Global 25 m Resolution PALSAR-2/PALSAR Mosaic
+            and Forest/Non-Forest Map (FNF)''',
+        license="proprietarty",
         providers=providers,
         extent=extent,
         catalog_type=CatalogType.RELATIVE_PUBLISHED,
@@ -88,7 +89,7 @@ def create_item(asset_href: str) -> Item:
                 bbox=bbox,
                 datetime=datetime.now(tz=timezone.utc),
                 properties={},
-                stac_extensions={})
+                stac_extensions=[])
 
     item.add_links(ALOS_PALSAR_LINKS)
     item.common_metadata.platform = ALOS_PALSAR_PLATFORM
