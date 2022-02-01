@@ -1,7 +1,7 @@
 from pystac import Link, Provider
+from pystac import ProviderRole as PR
 # from pystac.extensions.sar import
 from pystac.extensions.eo import Band
-from pystac.ProviderRole import licensor, processor, producer  # type: ignore
 
 ALOS_PALSAR_PLATFORM = "alos-2/alos"
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR-2", "PALSAR"]
@@ -9,8 +9,9 @@ ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
 ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
-             roles=[producer, processor, licensor],
+             roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
+    Provider("Microsoft Planetary Computer", roles=[PR.HOST])
 ]
 ALOS_PALSAR_LINKS = [
     Link(

@@ -10,36 +10,38 @@ from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
 class CogTest(unittest.TestCase):
 
     def test_cogify(self):
-        # Fix path to data in the package
+        # TODO: Fix path to data in the package
+        # TODO: Test a FNF example
         path = test_data.get_path(ALOS2_PALSAR_MOS_FILENAME)
         with TemporaryDirectory() as directory:
             cogs = cog.cogify(tile_path=path, output_directory=directory)
 
-            hv_path = cogs[2]
+            print(cogs)
+            hv_path = cogs["sl_HV"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HV')),
                 os.path.basename(hv_path))
 
-            hh_path = cogs[3]
+            hh_path = cogs["sl_HH"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HH')),
                 os.path.basename(hh_path))
 
-            linci_path = cogs[0]
+            linci_path = cogs["linci"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'lini')),
+                    path.replace(".tar.gz", ".tif").replace('MOS', 'linci')),
                 os.path.basename(linci_path))
 
-            date_path = cogs[4]
+            date_path = cogs["date"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'date')),
                 os.path.basename(date_path))
 
-            mask_path = cogs[1]
+            mask_path = cogs["mask"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'mask')),
