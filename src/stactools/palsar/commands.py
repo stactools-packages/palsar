@@ -62,9 +62,7 @@ def create_palsar_command(cli):
         # TODO: pass COGs to create_item, as assets list
         item = stac.create_item(cogs)
         json_file = '_'.join((os.path.basename(source)).split("_")[0:2])
-        json_path = os.path.join(
-            destination,
-            f'{json_file}.json')
+        json_path = os.path.join(destination, f'{json_file}.json')
         print(json_path)
         item.set_self_href(json_path)
         item.save_object(dest_href=json_path)

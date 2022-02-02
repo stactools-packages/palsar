@@ -9,14 +9,10 @@ from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
 from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
-from stactools.palsar.constants import (ALOS_DESCRIPTION, ALOS_SPATIAL_EXTENT,
-                                        ALOS_TEMPORAL_EXTENT,
-                                        ALOS_PALSAR_EPSG, 
-                                        ALOS_PALSAR_GSD,
-                                        ALOS_PALSAR_INSTRUMENTS,
-                                        ALOS_PALSAR_LINKS,
-                                        ALOS_PALSAR_PLATFORMS,
-                                        ALOS_PALSAR_PROVIDERS)
+from stactools.palsar.constants import (
+    ALOS_DESCRIPTION, ALOS_PALSAR_EPSG, ALOS_PALSAR_GSD,
+    ALOS_PALSAR_INSTRUMENTS, ALOS_PALSAR_LINKS, ALOS_PALSAR_PLATFORMS,
+    ALOS_PALSAR_PROVIDERS, ALOS_SPATIAL_EXTENT, ALOS_TEMPORAL_EXTENT)
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +90,7 @@ def create_item(assets_hrefs: Dict) -> Item:
         geometry = mapping(box(*bbox))
         transform = dataset.transform
         shape = dataset.shape
-    
+
     properties = {
         "title": "A dummy STAC Item",
         "description": "Used for demonstration purposes",
@@ -108,7 +104,7 @@ def create_item(assets_hrefs: Dict) -> Item:
                 stac_extensions=[])
 
     item.add_links(ALOS_PALSAR_LINKS)
-    
+
     # Data before 2015 is PALSAR, after PALSAR-2
     if year >= 15:
         item.common_metadata.platform = ALOS_PALSAR_PLATFORMS[1]
@@ -116,8 +112,6 @@ def create_item(assets_hrefs: Dict) -> Item:
     item.common_metadata.gsd = ALOS_PALSAR_GSD
     item.common_metadata.providers = ALOS_PALSAR_PROVIDERS
     item.common_metadata.license = "proprietary"
-
-    
 
     # It is a good idea to include proj attributes to optimize for libs like stac-vrt
     proj_attrs = ProjectionExtension.ext(item, add_if_missing=True)
