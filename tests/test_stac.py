@@ -6,7 +6,8 @@ import pystac
 from stactools.testing import TestData
 
 from stactools.palsar import stac
-from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
+
+test_data = TestData(__file__)
 
 
 class StacTest(unittest.TestCase):
@@ -29,7 +30,7 @@ class StacTest(unittest.TestCase):
         # Write tests for each for the creation of STAC Items
         # Create the STAC Item...
         with TemporaryDirectory() as tmp_dir:
-            test_path = test_data.get_path("data-files/external/")
+            test_path = test_data.get_path("data-files/")
             cog_path = os.path.join(test_path, [
                 d for d in os.listdir(test_path) if d.lower().endswith(".tif")
             ][0])
@@ -44,6 +45,7 @@ class StacTest(unittest.TestCase):
             self.assertEqual(len(jsons), 1)
 
             item_path = os.path.join(tmp_dir, jsons[0])
+            print(item_path)
             item = pystac.read_file(item_path)
             item.validate()
 

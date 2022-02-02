@@ -3,15 +3,14 @@ import sys
 
 from stactools.testing import TestData
 
-ALOS2_PALSAR_MOS_FILENAME = (
-    "data-files/external/N00E025_18_MOS_F02DAR.tar.gz")
-ALOS2_PALSAR_FNF_FILENAME = ("N39W028_17_FNF_F02DAR.tar.gz")
+ALOS2_PALSAR_MOS_FILENAME = ("data-files/S16W150_15_MOS_F02DAR.tar.gz")
+ALOS2_PALSAR_FNF_FILENAME = ("data-files/S16W150_15_FNF_F02DAR.tar.gz")
 
 # JAXA data isn't accessible without credentials
 # use a local file in the repo instead?
 EXTERNAL_DATA = {
-    'N00E025_18_mask_F02DAR.tar.gz': {
-        "url": ("data-files/external/N00E025_18_MOS_F02DAR.tar.gz"),
+    'S16W150_15_MOS_F02DAR.tar.gz': {
+        "url": ("data-files/S16W150_15_MOS_F02DAR.tar.gz"),
         "compress": "tar.gz",
     },
 }

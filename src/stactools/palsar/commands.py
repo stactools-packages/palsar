@@ -56,12 +56,15 @@ def create_palsar_command(cli):
         if cogify:
             cogs = cog.cogify(source, destination)
         else:
-            cogs = {}
+            cogs = {'cog': source}
 
         # TODO: pass COGs to create_item, as assets list
-        # item = stac.create_item(source)
-
-        # item.save_object(dest_href=destination)
+        for a_cog in cogs.values():
+            item = stac.create_item(a_cog)
+            json_path = a_cog.replace(".tif", ".json")
+            print(json_path)
+            item.set_self_href(json_path)
+            item.save_object(dest_href=json_path)
 
         return cogs
 
