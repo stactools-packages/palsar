@@ -32,7 +32,7 @@ class CommandsTest(CliTestCase):
             self.assertEqual(len(jsons), 1)
 
             collection = pystac.read_file(destination)
-            self.assertEqual(collection.id, "my-collection-id")
+            self.assertEqual(collection.id, "alos_palsar_mosaic")
             # self.assertEqual(item.other_attr...
 
             collection.validate()
@@ -59,7 +59,7 @@ class CommandsTest(CliTestCase):
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)
 
-            item = pystac.read_file(jsons[0])
+            item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
             self.assertEqual(item.id, "my-item-id")
             # self.assertEqual(item.other_attr...
 

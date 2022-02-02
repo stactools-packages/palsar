@@ -1,4 +1,5 @@
 import logging
+import os
 
 import click
 
@@ -61,7 +62,9 @@ def create_palsar_command(cli):
         # TODO: pass COGs to create_item, as assets list
         for a_cog in cogs.values():
             item = stac.create_item(a_cog)
-            json_path = a_cog.replace(".tif", ".json")
+            json_path = os.path.join(
+                destination,
+                os.path.basename(a_cog).replace(".tif", ".json"))
             print(json_path)
             item.set_self_href(json_path)
             item.save_object(dest_href=json_path)
