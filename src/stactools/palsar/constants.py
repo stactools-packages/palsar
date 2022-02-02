@@ -1,10 +1,16 @@
+import datetime
+
 from pystac import Link, Provider
 from pystac import ProviderRole as PR
 # from pystac.extensions.sar import
 from pystac.extensions.eo import Band
 
-ALOS_PALSAR_PLATFORM = "alos-2/alos"
-ALOS_PALSAR_INSTRUMENTS = ["PALSAR-2", "PALSAR"]
+# TODO: Update if including PALSAR back to 2007
+ALOS_TEMPORAL_EXTENT = [datetime.datetime(2015, 1, 1, tzinfo=datetime.timezone.utc),
+    datetime.datetime(2020, 12, 31, tzinfo=datetime.timezone.utc)]
+ALOS_SPATIAL_EXTENT = [[-180., 90., 180., -90.]]
+ALOS_PALSAR_PLATFORMS = ["alos", "alos-2"]
+ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
 ALOS_PALSAR_PROVIDERS = [
@@ -13,14 +19,15 @@ ALOS_PALSAR_PROVIDERS = [
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
     Provider("Microsoft Planetary Computer", roles=[PR.HOST])
 ]
+ALOS_DESCRIPTION = ("Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF)"
+        "Dataset Description")
 ALOS_PALSAR_LINKS = [
     Link(
         "handbook",
-        "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription\
-            _PALSAR2_Mosaic_FNF_revK.pdf",
+        ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"
+        "_PALSAR2_Mosaic_FNF_revK.pdf"),
         "application/pdf",
-        "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF) \
-            Dataset Description",
+        ALOS_DESCRIPTION,
         extra_fields={"description": "Also includes data usage information"})
 ]
 ALOS_PALSAR_BANDS = {

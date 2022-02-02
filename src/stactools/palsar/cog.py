@@ -36,7 +36,7 @@ def cogify(tile_path: str, output_directory: str):
         # Extract the Band name
         var_split = variable.split("_")
         if len(var_split) == 5:
-            band = "_".join(var_split[2:4])
+            band = var_split[3]
         else:
             band = var_split[2]
 
