@@ -32,7 +32,7 @@ def main(msg: func.QueueMessage) -> None:
         logging.info('Saved input at ' + target_path)
         cogs = cog.cogify(target_path, '/tmp')
         logging.info('Saved COGs at' + str(cogs))
-        for cogfile in cogs:
+        for cogfile in list(cogs.values()):
             _, tail = os.path.split(cogfile)
             blob_client = blob_service_client.get_blob_client(
                 container="output", blob=dir + '/' + tail)
