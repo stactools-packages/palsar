@@ -9,15 +9,9 @@ from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
 from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
-from stactools.palsar.constants import (
-    ALOS_DESCRIPTION, ALOS_PALSAR_EPSG, ALOS_PALSAR_GSD,
-    ALOS_PALSAR_INSTRUMENTS, ALOS_PALSAR_LINKS, ALOS_PALSAR_PLATFORMS,
-    ALOS_PALSAR_PROVIDERS, ALOS_SPATIAL_EXTENT, ALOS_TEMPORAL_EXTENT)
+from stactools.palsar import constants as co
 
 logger = logging.getLogger(__name__)
-
-# from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
-#                    Provider, ProviderRole, SpatialExtent, TemporalExtent)
 
 
 def create_collection() -> Collection:
@@ -32,30 +26,25 @@ def create_collection() -> Collection:
     Returns:
         Collection: STAC Collection object
     """
-    providers = ALOS_PALSAR_PROVIDERS
+    providers = co.ALOS_PALSAR_PROVIDERS
 
     # Time must be in UTC
 
-    extent = Extent(
-        SpatialExtent(ALOS_SPATIAL_EXTENT),
-        TemporalExtent(ALOS_TEMPORAL_EXTENT),
-    )
+    extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
+                    TemporalExtent([co.ALOS_TEMPORAL_EXTENT]))
 
     collection = Collection(
         # TODO: set in constants
         id="alos_palsar_mosaic",
         title="ALOS PALSAR Annual Mosaic",
-        description=ALOS_DESCRIPTION,
+        description=co.ALOS_DESCRIPTION,
         license="proprietary",
         providers=providers,
         extent=extent,
         catalog_type=CatalogType.RELATIVE_PUBLISHED,
     )
 
-    collection.platform = ALOS_PALSAR_PLATFORMS
-    collection.instruments = ALOS_PALSAR_INSTRUMENTS
-    collection.gsd = ALOS_PALSAR_GSD
-    collection.providers = ALOS_PALSAR_PROVIDERS
+    collection.providers = co.ALOS_PALSAR_PROVIDERS
     collection.license = "proprietary"
 
     return collection
@@ -84,7 +73,7 @@ def create_item(assets_hrefs: Dict) -> Item:
     with rasterio.open(asset_href) as dataset:
         if dataset.crs.to_epsg() != 4326:
             raise ValueError(
-                f"Dataset {asset_href} is not EPSG:4326, which is required for ALOS DEM data"
+                f"Dataset {asset_href} is not EPSG:4326, which is required for ALOS data"
             )
         bbox = list(dataset.bounds)
         geometry = mapping(box(*bbox))
@@ -103,19 +92,19 @@ def create_item(assets_hrefs: Dict) -> Item:
                 properties=properties,
                 stac_extensions=[])
 
-    item.add_links(ALOS_PALSAR_LINKS)
+    item.add_links(co.ALOS_PALSAR_LINKS)
 
     # Data before 2015 is PALSAR, after PALSAR-2
-    if year >= 15:
-        item.common_metadata.platform = ALOS_PALSAR_PLATFORMS[1]
-        item.common_metadata.instruments = ALOS_PALSAR_INSTRUMENTS[1]
-    item.common_metadata.gsd = ALOS_PALSAR_GSD
-    item.common_metadata.providers = ALOS_PALSAR_PROVIDERS
+    if int(year) >= 15:
+        item.common_metadata.platform = co.ALOS_PALSAR_PLATFORMS[1]
+        item.common_metadata.instruments = list(co.ALOS_PALSAR_INSTRUMENTS[1])
+    item.common_metadata.gsd = co.ALOS_PALSAR_GSD
+    item.common_metadata.providers = co.ALOS_PALSAR_PROVIDERS
     item.common_metadata.license = "proprietary"
 
     # It is a good idea to include proj attributes to optimize for libs like stac-vrt
     proj_attrs = ProjectionExtension.ext(item, add_if_missing=True)
-    proj_attrs.epsg = ALOS_PALSAR_EPSG
+    proj_attrs.epsg = co.ALOS_PALSAR_EPSG
     proj_attrs.bbox = bbox
     proj_attrs.shape = shape  # Raster shape
     proj_attrs.transform = transform  # Raster GeoTransform

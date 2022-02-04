@@ -44,8 +44,7 @@ class CommandsTest(CliTestCase):
             cog_path = os.path.join(test_path, [
                 d for d in os.listdir(test_path) if d.lower().endswith(".tif")
             ][0])
-            # Example:
-            # destination = os.path.join(tmp_dir, "item.json")
+
             result = self.run_command([
                 "palsar",
                 "create-item",
@@ -60,7 +59,7 @@ class CommandsTest(CliTestCase):
             self.assertEqual(len(jsons), 1)
 
             item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
-            self.assertEqual(item.id, "my-item-id")
+            self.assertEqual(item.id, "S16W150_15")
             # self.assertEqual(item.other_attr...
 
             item.validate()

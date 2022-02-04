@@ -1,15 +1,19 @@
-import datetime
+from datetime import datetime
+from typing import Optional
 
 from pystac import Link, Provider
 from pystac import ProviderRole as PR
 # from pystac.extensions.sar import
 from pystac.extensions.eo import Band
+from pystac.utils import str_to_datetime
 
 # TODO: Update if including PALSAR back to 2007
-ALOS_TEMPORAL_EXTENT = [
-    datetime.datetime(2015, 1, 1, tzinfo=datetime.timezone.utc),
-    datetime.datetime(2020, 12, 31, tzinfo=datetime.timezone.utc)
-]
+
+ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
+    "2015-01-01T00:00:00Z")
+ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
+    "2020-12-31T23:59:59Z")
+ALOS_TEMPORAL_EXTENT = [ALOS_COLLECTION_START, ALOS_COLLECTION_END]
 ALOS_SPATIAL_EXTENT = [[-180., 90., 180., -90.]]
 ALOS_PALSAR_PLATFORMS = ["alos", "alos-2"]
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
