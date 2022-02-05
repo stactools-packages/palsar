@@ -15,7 +15,7 @@ ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
     "2020-12-31T23:59:59Z")
 ALOS_TEMPORAL_EXTENT = [ALOS_COLLECTION_START, ALOS_COLLECTION_END]
 ALOS_SPATIAL_EXTENT = [[-180., 90., 180., -90.]]
-ALOS_PALSAR_PLATFORMS = ["alos", "alos-2"]
+ALOS_PALSAR_PLATFORMS = ["ALOS", "ALOS-2"]
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
@@ -23,11 +23,15 @@ ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
              roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
-    Provider("Microsoft Planetary Computer", roles=[PR.HOST])
+    Provider("Microsoft Planetary Computer",
+             roles=[PR.HOST, PR.PROCESSOR],
+             url="https://planetarycomputer.microsoft.com/")
 ]
 ALOS_DESCRIPTION = (
     "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF)"
     "Dataset Description")
+ALOS_MOS_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Mosaic (MOS)"
+ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest Map (FNF)"
 ALOS_PALSAR_LINKS = [
     Link("handbook",
          ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"

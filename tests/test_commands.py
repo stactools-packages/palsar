@@ -22,7 +22,7 @@ class CommandsTest(CliTestCase):
             destination = os.path.join(tmp_dir, "collection.json")
 
             result = self.run_command(
-                ["palsar", "create-collection", destination])
+                ["palsar", "create-collection", "MOS", destination])
 
             self.assertEqual(result.exit_code,
                              0,

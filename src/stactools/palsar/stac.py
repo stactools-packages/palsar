@@ -5,7 +5,7 @@ from typing import Dict
 
 import rasterio  # type: ignore
 from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
-                    SpatialExtent, TemporalExtent)
+                    SpatialExtent, Summaries, TemporalExtent)
 from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
@@ -14,7 +14,7 @@ from stactools.palsar import constants as co
 logger = logging.getLogger(__name__)
 
 
-def create_collection() -> Collection:
+def create_collection(product: str) -> Collection:
     """Create a STAC Collection
 
     This function includes logic to extract all relevant metadata from
@@ -22,6 +22,12 @@ def create_collection() -> Collection:
     accompanying constants.py file.
 
     See `Collection<https://pystac.readthedocs.io/en/latest/api.html#collection>`_.
+
+    Args:
+        Product (str): MOS for mosiac, FNF for Forest/Non-Forest
+
+    Returns:
+        Item: STAC Item object
 
     Returns:
         Collection: STAC Collection object
@@ -33,18 +39,32 @@ def create_collection() -> Collection:
     extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
                     TemporalExtent([co.ALOS_TEMPORAL_EXTENT]))
 
+    summaries = {
+        "platform": co.ALOS_PALSAR_PLATFORMS,
+        "instruments": co.ALOS_PALSAR_INSTRUMENTS,
+    }
+
+    if product == 'FNF':
+        id = "alos_fnf_mosaic"
+        title = "ALOS Forest/Non-Forest Annual Mosaic"
+        description = co.ALOS_FNF_DESCRIPTION
+    else:
+        id = "alos_palsar_mosaic"
+        title = "ALOS PALSAR Annual Mosaic"
+        description = co.ALOS_MOS_DESCRIPTION
+
     collection = Collection(
         # TODO: set in constants
-        id="alos_palsar_mosaic",
-        title="ALOS PALSAR Annual Mosaic",
-        description=co.ALOS_DESCRIPTION,
+        id=id,
+        title=title,
+        description=description,
         license="proprietary",
         providers=providers,
         extent=extent,
         catalog_type=CatalogType.RELATIVE_PUBLISHED,
+        summaries=Summaries(summaries),
     )
 
-    collection.providers = co.ALOS_PALSAR_PROVIDERS
     collection.license = "proprietary"
 
     return collection
@@ -80,10 +100,23 @@ def create_item(assets_hrefs: Dict) -> Item:
         transform = dataset.transform
         shape = dataset.shape
 
-    properties = {
-        "title": "A dummy STAC Item",
-        "description": "Used for demonstration purposes",
-    }
+    start_datetime = f"20{year}-01-01T00:00:00Z"
+    end_datetime = f"20{year}-12-31T23:59:59Z"
+
+    if os.path.basename(asset_href).split("_")[2] == "C":
+        properties = {
+            "title": f"{item_id}_FNF",
+            "description": "Forest/Non-Forest Classification",
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
+        }
+    else:
+        properties = {
+            "title": f"{item_id}_MOS",
+            "description": "Annual PALSAR Mosaic",
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
+        }
 
     item = Item(id=item_id,
                 geometry=geometry,
@@ -97,7 +130,7 @@ def create_item(assets_hrefs: Dict) -> Item:
     # Data before 2015 is PALSAR, after PALSAR-2
     if int(year) >= 15:
         item.common_metadata.platform = co.ALOS_PALSAR_PLATFORMS[1]
-        item.common_metadata.instruments = list(co.ALOS_PALSAR_INSTRUMENTS[1])
+        item.common_metadata.instruments = [co.ALOS_PALSAR_INSTRUMENTS[1]]
     item.common_metadata.gsd = co.ALOS_PALSAR_GSD
     item.common_metadata.providers = co.ALOS_PALSAR_PROVIDERS
     item.common_metadata.license = "proprietary"

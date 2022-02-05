@@ -22,14 +22,16 @@ def create_palsar_command(cli):
         "create-collection",
         short_help="Creates a STAC collection",
     )
+    @click.argument("product")
     @click.argument("destination")
-    def create_collection_command(destination: str):
+    def create_collection_command(product: str, destination: str):
         """Creates a STAC Collection
 
         Args:
+            product (str): MOS or FNF Collection type
             destination (str): An HREF for the Collection JSON
         """
-        collection = stac.create_collection()
+        collection = stac.create_collection(product)
 
         collection.set_self_href(destination)
 
@@ -61,7 +63,7 @@ def create_palsar_command(cli):
 
         # TODO: pass COGs to create_item, as assets list
         item = stac.create_item(cogs)
-        json_file = '_'.join((os.path.basename(source)).split("_")[0:2])
+        json_file = '_'.join((os.path.basename(source)).split("_")[0:3])
         json_path = os.path.join(destination, f'{json_file}.json')
         print(json_path)
         item.set_self_href(json_path)
