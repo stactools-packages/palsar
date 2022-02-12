@@ -70,7 +70,7 @@ def create_collection(product: str) -> Collection:
     return collection
 
 
-def create_item(assets_hrefs: Dict) -> Item:
+def create_item(assets_hrefs: Dict, root_href: str = '/') -> Item:
     """Create a STAC Item
 
     This function should include logic to extract all relevant metadata from an
@@ -110,6 +110,7 @@ def create_item(assets_hrefs: Dict) -> Item:
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
         }
+        collection = 'alos_fnf_mosaic'
     else:
         properties = {
             "title": f"{item_id}_MOS",
@@ -117,13 +118,15 @@ def create_item(assets_hrefs: Dict) -> Item:
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
         }
+        collection = 'alos_palsar_mosaic'
 
     item = Item(id=item_id,
                 geometry=geometry,
                 bbox=bbox,
                 datetime=datetime.now(tz=timezone.utc),
                 properties=properties,
-                stac_extensions=[])
+                stac_extensions=[],
+                collection=collection)
 
     item.add_links(co.ALOS_PALSAR_LINKS)
 
@@ -150,7 +153,7 @@ def create_item(assets_hrefs: Dict) -> Item:
             key,
             Asset(
                 # TODO: add relative or absolute url
-                href=os.path.basename(value),
+                href=os.path.join(root_href, os.path.basename(value)),
                 media_type=MediaType.COG,
                 roles=["data"],
                 title=key,

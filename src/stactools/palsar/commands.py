@@ -48,7 +48,11 @@ def create_palsar_command(cli):
         is_flag=True,
         help="Convert the source into COGs. COG Asset HREFs will be local paths"
     )
-    def create_item_command(source: str, destination: str, cogify: bool):
+    @click.option("-h", "--href", help="Root HREF to prepend to all records")
+    def create_item_command(source: str,
+                            destination: str,
+                            cogify: bool,
+                            href: str = ''):
         """Creates a STAC Item
 
         Args:
@@ -61,12 +65,13 @@ def create_palsar_command(cli):
         else:
             cogs = {'cog': source}
 
-        # TODO: pass COGs to create_item, as assets list
-        item = stac.create_item(cogs)
+        item = stac.create_item(cogs, href)
         json_file = '_'.join((os.path.basename(source)).split("_")[0:3])
         json_path = os.path.join(destination, f'{json_file}.json')
         print(json_path)
-        item.set_self_href(json_path)
+        item.set_self_href(os.path.join(href, os.path.basename(json_path)))
+        # TODO: gracefully fail if validate doesn't work
+        #item.validate()
         item.save_object(dest_href=json_path)
 
         return cogs
