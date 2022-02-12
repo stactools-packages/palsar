@@ -70,7 +70,7 @@ def create_collection(product: str) -> Collection:
     return collection
 
 
-def create_item(assets_hrefs: Dict, root_href: str = '/') -> Item:
+def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     """Create a STAC Item
 
     This function should include logic to extract all relevant metadata from an

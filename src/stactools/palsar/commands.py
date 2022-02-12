@@ -48,7 +48,11 @@ def create_palsar_command(cli):
         is_flag=True,
         help="Convert the source into COGs. COG Asset HREFs will be local paths"
     )
-    @click.option("-h", "--href", help="Root HREF to prepend to all records")
+    @click.option("-h",
+                  "--href",
+                  default='',
+                  type=str,
+                  help="Root HREF to prepend to all records")
     def create_item_command(source: str,
                             destination: str,
                             cogify: bool,
@@ -71,7 +75,7 @@ def create_palsar_command(cli):
         print(json_path)
         item.set_self_href(os.path.join(href, os.path.basename(json_path)))
         # TODO: gracefully fail if validate doesn't work
-        #item.validate()
+        # item.validate()
         item.save_object(dest_href=json_path)
 
         return cogs
