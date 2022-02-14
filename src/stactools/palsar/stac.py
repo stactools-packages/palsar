@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from typing import Dict
 
 import rasterio  # type: ignore
-from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
-                    SpatialExtent, Summaries, TemporalExtent)
+from pystac import (Asset, CatalogType, Collection, Extent, Item, Link,
+                    MediaType, SpatialExtent, Summaries, TemporalExtent)
 from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
@@ -120,15 +120,18 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         }
         collection = 'alos_palsar_mosaic'
 
-    item = Item(id=item_id,
-                geometry=geometry,
-                bbox=bbox,
-                datetime=datetime.now(tz=timezone.utc),
-                properties=properties,
-                stac_extensions=[],
-                collection=collection)
+    item = Item(
+        id=item_id,
+        geometry=geometry,
+        bbox=bbox,
+        datetime=datetime.now(tz=timezone.utc),
+        properties=properties,
+        stac_extensions=[],
+    )
 
+    item.collection_id = collection
     item.add_links(co.ALOS_PALSAR_LINKS)
+    item.links.append(Link(rel="collection", target="http://example.com"))
 
     # Data before 2015 is PALSAR, after PALSAR-2
     if int(year) >= 15:
