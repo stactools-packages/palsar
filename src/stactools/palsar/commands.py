@@ -75,7 +75,7 @@ def create_palsar_command(cli):
         print(json_path)
         item.set_self_href(os.path.join(href, os.path.basename(json_path)))
         # TODO: gracefully fail if validate doesn't work
-        # item.validate()
+        item.validate()
         item.save_object(dest_href=json_path)
 
         return cogs
