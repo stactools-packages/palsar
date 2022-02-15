@@ -7,7 +7,7 @@ from pystac import ProviderRole as PR
 from pystac.extensions.eo import Band
 from pystac.utils import str_to_datetime
 
-# TODO: Update if including PALSAR back to 2007
+# TODO: These values apply to data from 2015 and newer, review and adjust if implementing older data.
 
 ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
     "2015-01-01T00:00:00Z")
