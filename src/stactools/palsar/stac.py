@@ -112,7 +112,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
             "end_datetime": end_datetime,
         }
         collection = 'alos_fnf_mosaic'
-        
+
     else:
         item_id = f"{item_root}_MOS"
         properties = {
@@ -134,7 +134,9 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
 
     item.collection_id = collection
     item.add_links(co.ALOS_PALSAR_LINKS)
-    item.links.append(Link(rel="collection", target=os.path.join(root_href, f"{collection}.json")))
+    item.links.append(
+        Link(rel="collection",
+             target=os.path.join(root_href, f"{collection}.json")))
 
     # Data before 2015 is PALSAR, after PALSAR-2
     if int(year) >= 15:

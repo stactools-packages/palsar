@@ -29,7 +29,9 @@ def create_palsar_command(cli):
                   default='',
                   type=str,
                   help="Root HREF to prepend to all records")
-    def create_collection_command(product: str, destination: str, href: str = ''):
+    def create_collection_command(product: str,
+                                  destination: str,
+                                  href: str = ''):
         """Creates a STAC Collection
 
         Args:
@@ -39,7 +41,8 @@ def create_palsar_command(cli):
         """
         collection = stac.create_collection(product)
         json_path = os.path.join(destination, f'{collection.id}.json')
-        collection.set_self_href(os.path.join(href, collection.id, os.path.basename(json_path)))
+        collection.set_self_href(
+            os.path.join(href, collection.id, os.path.basename(json_path)))
         collection.validate()
         collection.save_object(dest_href=json_path)
 

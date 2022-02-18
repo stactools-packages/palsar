@@ -19,7 +19,7 @@ class CommandsTest(CliTestCase):
             # Run your custom create-collection command and validate
 
             # Example:
-            destination = os.path.join(tmp_dir, "collection.json")
+            destination = os.path.join(tmp_dir, "alos_palsar_mosaic")
 
             result = self.run_command(
                 ["palsar", "create-collection", "MOS", destination])
@@ -28,10 +28,13 @@ class CommandsTest(CliTestCase):
                              0,
                              msg="\n{}".format(result.output))
 
-            jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
+            jsons = [
+                os.path.join(destination, p) for p in os.listdir(destination)
+                if p.endswith(".json")
+            ]
             self.assertEqual(len(jsons), 1)
 
-            collection = pystac.read_file(destination)
+            collection = pystac.read_file(jsons[0])
             self.assertEqual(collection.id, "alos_palsar_mosaic")
             # self.assertEqual(item.other_attr...
 
@@ -59,7 +62,7 @@ class CommandsTest(CliTestCase):
             self.assertEqual(len(jsons), 1)
 
             item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
-            self.assertEqual(item.id, "S16W150_15")
+            self.assertEqual(item.id, "S16W150_15_MOS")
             # self.assertEqual(item.other_attr...
 
             item.validate()
