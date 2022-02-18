@@ -24,17 +24,24 @@ def create_palsar_command(cli):
     )
     @click.argument("product")
     @click.argument("destination")
-    def create_collection_command(product: str, destination: str):
+    @click.option("-h",
+                  "--href",
+                  default='',
+                  type=str,
+                  help="Root HREF to prepend to all records")
+    def create_collection_command(product: str, destination: str, href: str = ''):
         """Creates a STAC Collection
 
         Args:
             product (str): MOS or FNF Collection type
-            destination (str): An HREF for the Collection JSON
+            destination (str): Path (local or HREF) for the Collection JSON
+            href (str): Optional base HREF inside the JSON links
         """
         collection = stac.create_collection(product)
-        collection.set_self_href(destination)
+        json_path = os.path.join(destination, f'{collection.id}.json')
+        collection.set_self_href(os.path.join(href, collection.id, os.path.basename(json_path)))
         collection.validate()
-        collection.save_object()
+        collection.save_object(dest_href=json_path)
 
         return None
 
@@ -70,9 +77,7 @@ def create_palsar_command(cli):
 
         item = stac.create_item(cogs, href)
         json_file = '_'.join((os.path.basename(source)).split("_")[0:3])
-        print(json_file)
         json_path = os.path.join(destination, f'{json_file}.json')
-        print(json_path)
         item.set_self_href(os.path.join(href, os.path.basename(json_path)))
         # TODO: gracefully fail if validate doesn't work
         item.validate()
