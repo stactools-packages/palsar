@@ -1,11 +1,10 @@
 import logging
 import os
-import subprocess
 
-from rio_cogeo.cogeo import cog_translate
-from rio_cogeo.profiles import cog_profiles
+from rio_cogeo.cogeo import cog_translate  # type: ignore
+from rio_cogeo.profiles import cog_profiles  # type: ignore
 
-from stactools.palsar.errors import CogifyError
+# from stactools.palsar.errors import CogifyError
 from stactools.palsar.utils import extract_archive, palsar_folder_parse
 
 logger = logging.getLogger(__name__)
@@ -26,13 +25,20 @@ def cogify(tile_path: str, output_directory: str):
     # Newer years (2019+) has xml file, ignore
     # Pre 2019, look for .hdr files, then remove hdr for actual file to use
     # for each valid file convert to cog
-    cogs = []
+    cogs = {}
     for variable in src_files:
-        #Create a cog filename
+        # Create a cog filename
         if (not variable.endswith('.tif')):
             cog_name = ".".join([variable, 'tif'])
         else:
             cog_name = variable
+
+        # Extract the Band name
+        var_split = variable.split("_")
+        if len(var_split) == 5:
+            band = "_".join(var_split[2:4])
+        else:
+            band = var_split[2]
 
         logger.info(f"Creating COG for variable {variable}")
         outfile = os.path.join(output_directory, cog_name)
@@ -58,7 +64,8 @@ def cogify(tile_path: str, output_directory: str):
             quiet=True,
         )
         logging.info("Wrote out to " + outfile)
-        cogs.append(outfile)
 
-    # return list of cogs by band
+        cogs[band] = outfile
+
+    # return dict of cogs by band
     return cogs

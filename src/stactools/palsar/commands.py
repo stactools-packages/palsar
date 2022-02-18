@@ -59,10 +59,10 @@ def create_palsar_command(cli):
             cogs = {}
 
         # TODO: pass COGs to create_item, as assets list
-        #item = stac.create_item(source)
+        # item = stac.create_item(source)
 
-        #item.save_object(dest_href=destination)
+        # item.save_object(dest_href=destination)
 
-        return None
+        return cogs
 
     return palsar

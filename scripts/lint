@@ -22,14 +22,19 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         # Text formatting
+        echo "Running ec"
         ec --exclude "$EC_EXCLUDE"
         # Sort imports
+        echo "Running isort"
         isort --check .
         # Code formatting
+        echo "Running yapf"
         yapf -dpr ${DIRS_TO_CHECK[@]}
         # Lint
+        echo "Running flake8"
         flake8 ${DIRS_TO_CHECK[@]}
         # Type checking
+        echo "Running mypy"
         mypy src
     fi
 fi
