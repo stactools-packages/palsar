@@ -32,9 +32,8 @@ def create_palsar_command(cli):
             destination (str): An HREF for the Collection JSON
         """
         collection = stac.create_collection(product)
-
         collection.set_self_href(destination)
-
+        collection.validate()
         collection.save_object()
 
         return None
@@ -71,6 +70,7 @@ def create_palsar_command(cli):
 
         item = stac.create_item(cogs, href)
         json_file = '_'.join((os.path.basename(source)).split("_")[0:3])
+        print(json_file)
         json_path = os.path.join(destination, f'{json_file}.json')
         print(json_path)
         item.set_self_href(os.path.join(href, os.path.basename(json_path)))

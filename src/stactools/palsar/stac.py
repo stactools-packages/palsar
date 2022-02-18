@@ -87,8 +87,8 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
 
     # Get the general parameters from the first asset
     asset_href = list(assets_hrefs.values())[0]
-    item_id = '_'.join((os.path.basename(asset_href)).split("_")[0:2])
     year = os.path.basename(asset_href).split("_")[1]
+    item_root = '_'.join((os.path.basename(asset_href)).split("_")[0:2])
 
     with rasterio.open(asset_href) as dataset:
         if dataset.crs.to_epsg() != 4326:
@@ -104,16 +104,19 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     end_datetime = f"20{year}-12-31T23:59:59Z"
 
     if os.path.basename(asset_href).split("_")[2] == "C":
+        item_id = f"{item_root}_FNF"
         properties = {
-            "title": f"{item_id}_FNF",
+            "title": item_id,
             "description": "Forest/Non-Forest Classification",
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
         }
         collection = 'alos_fnf_mosaic'
+        
     else:
+        item_id = f"{item_root}_MOS"
         properties = {
-            "title": f"{item_id}_MOS",
+            "title": item_id,
             "description": "Annual PALSAR Mosaic",
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
@@ -131,7 +134,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
 
     item.collection_id = collection
     item.add_links(co.ALOS_PALSAR_LINKS)
-    item.links.append(Link(rel="collection", target="http://example.com"))
+    item.links.append(Link(rel="collection", target=os.path.join(root_href, f"{collection}.json")))
 
     # Data before 2015 is PALSAR, after PALSAR-2
     if int(year) >= 15:
