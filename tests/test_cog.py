@@ -17,13 +17,13 @@ class CogTest(unittest.TestCase):
             cogs = cog.cogify(tile_path=path, output_directory=directory)
 
             print(cogs)
-            hv_path = cogs["sl_HV"]
+            hv_path = cogs["HV"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HV')),
                 os.path.basename(hv_path))
 
-            hh_path = cogs["sl_HH"]
+            hh_path = cogs["HH"]
             self.assertEqual(
                 os.path.basename(
                     path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HH')),

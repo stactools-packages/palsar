@@ -36,9 +36,17 @@ def cogify(tile_path: str, output_directory: str):
         # Extract the Band name
         var_split = variable.split("_")
         if len(var_split) == 5:
-            band = "_".join(var_split[2:4])
+            band = var_split[3]
         else:
             band = var_split[2]
+
+        if int(var_split[1]) >= 19:
+            # NoData value changed in 2019? from 0 to 1
+            # TODO: mask band value of 0 is better for setting NoData
+            nodata_by_band = {"HH": 1, "HV": 1, "mask": 0, "linci": 1, "C": 0}
+            nodata = nodata_by_band.get(band)
+        else:
+            nodata = 0
 
         logger.info(f"Creating COG for variable {variable}")
         outfile = os.path.join(output_directory, cog_name)
@@ -46,7 +54,6 @@ def cogify(tile_path: str, output_directory: str):
 
         output_profile = cog_profiles.get("deflate")
         output_profile.update(dict(BIGTIFF="IF_SAFER"))
-        output_profile.update({})
 
         # Dataset Open option (see gdalwarp `-oo` option)
         config = dict(
@@ -55,14 +62,17 @@ def cogify(tile_path: str, output_directory: str):
             GDAL_TIFF_OVR_BLOCKSIZE="128",
         )
 
-        cog_translate(
-            infile,
-            outfile,
-            output_profile,
-            config=config,
-            in_memory=False,
-            quiet=True,
-        )
+        if nodata is not None:
+            cog_translate(
+                infile,
+                outfile,
+                output_profile,
+                config=config,
+                in_memory=False,
+                quiet=True,
+                nodata=nodata,
+            )
+
         logging.info("Wrote out to " + outfile)
 
         cogs[band] = outfile

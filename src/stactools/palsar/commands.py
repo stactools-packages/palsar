@@ -22,18 +22,26 @@ def create_palsar_command(cli):
         "create-collection",
         short_help="Creates a STAC collection",
     )
+    @click.argument("product")
     @click.argument("destination")
-    def create_collection_command(destination: str):
+    @click.option("-h",
+                  "--href",
+                  default='',
+                  type=str,
+                  help="Root HREF to prepend to all records")
+    def create_collection_command(product: str, destination: str, href: str = ''):
         """Creates a STAC Collection
 
         Args:
-            destination (str): An HREF for the Collection JSON
+            product (str): MOS or FNF Collection type
+            destination (str): Path (local or HREF) for the Collection JSON
+            href (str): Optional base HREF inside the JSON links
         """
-        collection = stac.create_collection()
-
-        collection.set_self_href(destination)
-
-        collection.save_object()
+        collection = stac.create_collection(product)
+        json_path = os.path.join(destination, f'{collection.id}.json')
+        collection.set_self_href(os.path.join(href, collection.id, os.path.basename(json_path)))
+        collection.validate()
+        collection.save_object(dest_href=json_path)
 
         return None
 
@@ -46,7 +54,15 @@ def create_palsar_command(cli):
         is_flag=True,
         help="Convert the source into COGs. COG Asset HREFs will be local paths"
     )
-    def create_item_command(source: str, destination: str, cogify: bool):
+    @click.option("-h",
+                  "--href",
+                  default='',
+                  type=str,
+                  help="Root HREF to prepend to all records")
+    def create_item_command(source: str,
+                            destination: str,
+                            cogify: bool,
+                            href: str = ''):
         """Creates a STAC Item
 
         Args:
@@ -59,15 +75,13 @@ def create_palsar_command(cli):
         else:
             cogs = {'cog': source}
 
-        # TODO: pass COGs to create_item, as assets list
-        for a_cog in cogs.values():
-            item = stac.create_item(a_cog)
-            json_path = os.path.join(
-                destination,
-                os.path.basename(a_cog).replace(".tif", ".json"))
-            print(json_path)
-            item.set_self_href(json_path)
-            item.save_object(dest_href=json_path)
+        item = stac.create_item(cogs, href)
+        json_file = '_'.join((os.path.basename(source)).split("_")[0:3])
+        json_path = os.path.join(destination, f'{json_file}.json')
+        item.set_self_href(os.path.join(href, os.path.basename(json_path)))
+        # TODO: gracefully fail if validate doesn't work
+        item.validate()
+        item.save_object(dest_href=json_path)
 
         return cogs
 

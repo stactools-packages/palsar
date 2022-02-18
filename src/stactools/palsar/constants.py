@@ -1,27 +1,44 @@
+from datetime import datetime
+from typing import Optional
+
 from pystac import Link, Provider
 from pystac import ProviderRole as PR
 # from pystac.extensions.sar import
 from pystac.extensions.eo import Band
+from pystac.utils import str_to_datetime
 
-ALOS_PALSAR_PLATFORM = "alos-2/alos"
-ALOS_PALSAR_INSTRUMENTS = ["PALSAR-2", "PALSAR"]
+# TODO: These values apply to data from 2015 and newer, review and adjust if implementing older data.
+
+ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
+    "2015-01-01T00:00:00Z")
+ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
+    "2020-12-31T23:59:59Z")
+ALOS_TEMPORAL_EXTENT = [ALOS_COLLECTION_START, ALOS_COLLECTION_END]
+ALOS_SPATIAL_EXTENT = [[-180., 90., 180., -90.]]
+ALOS_PALSAR_PLATFORMS = ["ALOS", "ALOS-2"]
+ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
 ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
              roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
-    Provider("Microsoft Planetary Computer", roles=[PR.HOST])
+    Provider("Microsoft Planetary Computer",
+             roles=[PR.HOST, PR.PROCESSOR],
+             url="https://planetarycomputer.microsoft.com/")
 ]
+ALOS_DESCRIPTION = (
+    "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF)"
+    "Dataset Description")
+ALOS_MOS_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Mosaic (MOS)"
+ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest Map (FNF)"
 ALOS_PALSAR_LINKS = [
-    Link(
-        "handbook",
-        "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription\
-            _PALSAR2_Mosaic_FNF_revK.pdf",
-        "application/pdf",
-        "Global 25 m Resolution PALSAR-2/PALSAR Mosaic and Forest/Non-Forest Map (FNF) \
-            Dataset Description",
-        extra_fields={"description": "Also includes data usage information"})
+    Link("handbook",
+         ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"
+          "_PALSAR2_Mosaic_FNF_revK.pdf"),
+         "application/pdf",
+         ALOS_DESCRIPTION,
+         extra_fields={"description": "Also includes data usage information"})
 ]
 ALOS_PALSAR_BANDS = {
     1:
