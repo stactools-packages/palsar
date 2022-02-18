@@ -13,6 +13,7 @@ class CogTest(unittest.TestCase):
         # TODO: Fix path to data in the package
         # TODO: Test a FNF example
         path = test_data.get_path(ALOS2_PALSAR_MOS_FILENAME)
+        product = "MOS"
         with TemporaryDirectory() as directory:
             cogs = cog.cogify(tile_path=path, output_directory=directory)
 
@@ -20,29 +21,29 @@ class CogTest(unittest.TestCase):
             hv_path = cogs["HV"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HV')),
+                    path.replace(".tar.gz", ".tif").replace(product, 'sl_HV')),
                 os.path.basename(hv_path))
 
             hh_path = cogs["HH"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'sl_HH')),
+                    path.replace(".tar.gz", ".tif").replace(product, 'sl_HH')),
                 os.path.basename(hh_path))
 
             linci_path = cogs["linci"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'linci')),
+                    path.replace(".tar.gz", ".tif").replace(product, 'linci')),
                 os.path.basename(linci_path))
 
             date_path = cogs["date"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'date')),
+                    path.replace(".tar.gz", ".tif").replace(product, 'date')),
                 os.path.basename(date_path))
 
             mask_path = cogs["mask"]
             self.assertEqual(
                 os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace('MOS', 'mask')),
+                    path.replace(".tar.gz", ".tif").replace(product, 'mask')),
                 os.path.basename(mask_path))
