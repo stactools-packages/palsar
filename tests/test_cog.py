@@ -3,14 +3,12 @@ import unittest
 from tempfile import TemporaryDirectory
 
 from stactools.palsar import cog
-# from stactools.palsar.errors import CogifyError
 from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
 
 
 class CogTest(unittest.TestCase):
 
     def test_cogify(self):
-        # TODO: Fix path to data in the package
         # TODO: Test a FNF example
         path = test_data.get_path(ALOS2_PALSAR_MOS_FILENAME)
         product = "MOS"
