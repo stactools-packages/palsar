@@ -15,16 +15,15 @@ class StacTest(unittest.TestCase):
     def test_create_collection(self):
         # Write tests for each for the creation of a STAC Collection
         # Create the STAC Collection...
-        # collection = stac.create_collection()
-        # collection.set_self_href("")
+        collection = stac.create_collection("MOS")
+        collection.set_self_href("")
 
         # Check that it has some required attributes
-        # self.assertEqual(collection.id, "alos_palsar_mosaic")
+        self.assertEqual(collection.id, "alos_palsar_mosaic")
         # self.assertEqual(collection.other_attr...
 
         # Validate
-        # collection.validate()
-        pass
+        collection.validate()
 
     def test_create_item(self):
         # Write tests for each for the creation of STAC Items
@@ -49,10 +48,3 @@ class StacTest(unittest.TestCase):
             print(item_path)
             item = pystac.read_file(item_path)
             item.validate()
-
-        # Check that it has some required attributes
-        # self.assertEqual(item.id, "my-item-id")
-        # self.assertEqual(item.other_attr...
-
-        # Validate
-        # item.validate()
