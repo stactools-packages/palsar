@@ -78,7 +78,6 @@ class StacTest(unittest.TestCase):
                     path.replace(".tar.gz", ".tif").replace(product, 'mask')),
                 os.path.basename(mask_path))
 
-
             # Create stac item
             item = stac.create_item(cogs)
             json_file = '_'.join((os.path.basename(path)).split("_")[0:3])
