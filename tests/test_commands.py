@@ -85,7 +85,7 @@ class CommandsTest(CliTestCase):
 
             item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
             self.assertEqual(item.id, "N23W161_20_MOS")
-            # TODO: Why is there a leading space in href? 
+            # TODO: Why is there a leading space in href?
             self.assertEqual(item.assets["date"].href.strip(),
                              "https://foo.bar/N23W161_20_date_F02DAR.tif")
 
