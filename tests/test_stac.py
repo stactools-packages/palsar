@@ -78,15 +78,11 @@ class StacTest(unittest.TestCase):
                     path.replace(".tar.gz", ".tif").replace(product, 'mask')),
                 os.path.basename(mask_path))
 
-            # cog_path = os.path.join(directory, [
-            #    d for d in os.listdir(directory) if d.lower().endswith(".tif")
-            # ][0])
 
             # Create stac item
             item = stac.create_item(cogs)
             json_file = '_'.join((os.path.basename(path)).split("_")[0:3])
             json_path = os.path.join(directory, f'{json_file}.json')
-            # TODO: gracefully fail if validate doesn't work
             item.validate()
             item.save_object(dest_href=json_path)
 
