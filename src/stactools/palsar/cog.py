@@ -69,12 +69,12 @@ def cogify(tile_path: str, output_directory: str):
                 output_profile,
                 config=config,
                 in_memory=False,
-                quiet=True,
+                quiet=False,
                 nodata=nodata,
             )
-            logging.info("Wrote out to " + outfile)
-        else:
-            logging.info("Nodata so skipped " + outfile)
+
+        logging.info("Wrote out to " + outfile)
+
         cogs[band] = outfile
 
     # return dict of cogs by band
