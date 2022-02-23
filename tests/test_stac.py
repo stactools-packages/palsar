@@ -1,6 +1,11 @@
+import os
 import unittest
+from tempfile import TemporaryDirectory
 
-from stactools.palsar import stac
+import pystac
+
+from stactools.palsar import cog, stac
+from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
 
 
 class StacTest(unittest.TestCase):
@@ -8,11 +13,11 @@ class StacTest(unittest.TestCase):
     def test_create_collection(self):
         # Write tests for each for the creation of a STAC Collection
         # Create the STAC Collection...
-        collection = stac.create_collection()
+        collection = stac.create_collection("MOS")
         collection.set_self_href("")
 
         # Check that it has some required attributes
-        self.assertEqual(collection.id, "my-collection-id")
+        self.assertEqual(collection.id, "alos_palsar_mosaic")
         # self.assertEqual(collection.other_attr...
 
         # Validate
@@ -20,12 +25,55 @@ class StacTest(unittest.TestCase):
 
     def test_create_item(self):
         # Write tests for each for the creation of STAC Items
-        # Create the STAC Item...
-        item = stac.create_item("/path/to/asset.tif")
+        # Create the STAC Item with COG conversion
+        # TODO: Test a FNF example
+        path = test_data.get_path(ALOS2_PALSAR_MOS_FILENAME)
+        product = "MOS"
+        with TemporaryDirectory() as directory:
+            cogs = cog.cogify(tile_path=path, output_directory=directory)
 
-        # Check that it has some required attributes
-        self.assertEqual(item.id, "my-item-id")
-        # self.assertEqual(item.other_attr...
+            print(cogs)
+            hv_path = cogs["HV"]
+            self.assertEqual(
+                os.path.basename(
+                    path.replace(".tar.gz", ".tif").replace(product, 'sl_HV')),
+                os.path.basename(hv_path))
 
-        # Validate
-        item.validate()
+            hh_path = cogs["HH"]
+            self.assertEqual(
+                os.path.basename(
+                    path.replace(".tar.gz", ".tif").replace(product, 'sl_HH')),
+                os.path.basename(hh_path))
+
+            linci_path = cogs["linci"]
+            self.assertEqual(
+                os.path.basename(
+                    path.replace(".tar.gz", ".tif").replace(product, 'linci')),
+                os.path.basename(linci_path))
+
+            date_path = cogs["date"]
+            self.assertEqual(
+                os.path.basename(
+                    path.replace(".tar.gz", ".tif").replace(product, 'date')),
+                os.path.basename(date_path))
+
+            mask_path = cogs["mask"]
+            self.assertEqual(
+                os.path.basename(
+                    path.replace(".tar.gz", ".tif").replace(product, 'mask')),
+                os.path.basename(mask_path))
+
+            # Create stac item
+            item = stac.create_item(cogs)
+            json_file = '_'.join((os.path.basename(path)).split("_")[0:3])
+            json_path = os.path.join(directory, f'{json_file}.json')
+            item.validate()
+            item.save_object(dest_href=json_path)
+
+            jsons = [p for p in os.listdir(directory) if p.endswith(".json")]
+            self.assertEqual(len(jsons), 1)
+
+            item_path = os.path.join(directory, jsons[0])
+            print(item_path)
+            item = pystac.read_file(item_path)
+            item.validate()

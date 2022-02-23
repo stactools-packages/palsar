@@ -8,7 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Nothing.
+- STAC item and collection tests
+- STAC item and collection generation
+- Modified COG generation to pass Asset names to item generation
+- Add FNF and MOS data examples to test, since they are normally password protected.
+- Implemented handling of NoData in COGs as it differs pre 2019.
+- CLI accepts additional HREF root option
+- Added Constants for repeatable Metadata
 
 ### Deprecated
 
