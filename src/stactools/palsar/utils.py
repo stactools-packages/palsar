@@ -3,12 +3,13 @@ import tarfile
 from typing import List
 
 
-def extract_archive(archive: str) -> str:
+def extract_archive(archive: str, output_directory: str = '') -> str:
     """
     Extract tar.gz
     return the folder
     """
-    output_directory = archive.replace('.tar.gz', '')
+    if output_directory == '':
+        output_directory = archive.replace('.tar.gz', '')
 
     file = tarfile.open(archive)
     file.extractall(output_directory)
