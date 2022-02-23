@@ -73,7 +73,7 @@ def cogify(tile_path: str, output_directory: str):
                 nodata=nodata,
             )
 
-        logging.info("Wrote out to " + outfile)
+        logging.info("Wrote out to A BIG FAT TEST DIRECTORY WHICH DEFINITELY EXISTS " + outfile)
 
         cogs[band] = outfile
 
