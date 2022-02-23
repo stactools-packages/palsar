@@ -5,6 +5,7 @@ from stactools.testing import TestData
 
 ALOS2_PALSAR_MOS_FILENAME = ("data-files/S16W150_15_MOS_F02DAR.tar.gz")
 ALOS2_PALSAR_FNF_FILENAME = ("data-files/S16W150_15_FNF_F02DAR.tar.gz")
+ALOS2_PALSAR_MOS_2020_FILENAME = ("data-files/N23W161_20_MOS_F02DAR.tar.gz")
 
 # JAXA data isn't accessible without credentials
 # use a local file in the repo instead?
