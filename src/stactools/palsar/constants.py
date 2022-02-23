@@ -10,6 +10,7 @@ from pystac.utils import str_to_datetime
 # TODO: These values apply to data from 2015 and newer,
 # review and adjust if implementing older data.
 
+# Time must be in UTC
 ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
     "2015-01-01T00:00:00Z")
 ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(

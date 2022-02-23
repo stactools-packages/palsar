@@ -34,8 +34,6 @@ def create_collection(product: str) -> Collection:
     """
     providers = co.ALOS_PALSAR_PROVIDERS
 
-    # Time must be in UTC
-
     extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
                     TemporalExtent([co.ALOS_TEMPORAL_EXTENT]))
 
@@ -97,7 +95,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
             )
         bbox = list(dataset.bounds)
         geometry = mapping(box(*bbox))
-        transform = dataset.transform
+        transform = list(dataset.transform)
         shape = dataset.shape
 
     start_datetime = f"20{year}-01-01T00:00:00Z"

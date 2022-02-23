@@ -43,7 +43,14 @@ def cogify(tile_path: str, output_directory: str):
         if int(var_split[1]) >= 19:
             # NoData value changed in 2019? from 0 to 1
             # TODO: mask band value of 0 is better for setting NoData
-            nodata_by_band = {"HH": 1, "HV": 1, "mask": 0, "linci": 1, "date":1, "C": 0}
+            nodata_by_band = {
+                "HH": 1,
+                "HV": 1,
+                "mask": 0,
+                "linci": 1,
+                "date": 1,
+                "C": 0
+            }
             nodata = nodata_by_band.get(band)
         else:
             nodata = 0
@@ -62,19 +69,18 @@ def cogify(tile_path: str, output_directory: str):
             GDAL_TIFF_OVR_BLOCKSIZE="128",
         )
 
-        if nodata is not None:
-            cog_translate(
-                infile,
-                outfile,
-                output_profile,
-                config=config,
-                in_memory=False,
-                quiet=False,
-                nodata=nodata,
-            )
+        cog_translate(
+            infile,
+            outfile,
+            output_profile,
+            config=config,
+            in_memory=None,
+            quiet=False,
+            nodata=nodata,
+        )
 
-            logging.info("Wrote out to " + outfile)
-            cogs[band] = outfile
+        logging.info("Wrote out to " + outfile)
+        cogs[band] = outfile
 
     # return dict of cogs by band
     return cogs
