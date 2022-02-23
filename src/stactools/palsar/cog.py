@@ -72,9 +72,9 @@ def cogify(tile_path: str, output_directory: str):
                 quiet=True,
                 nodata=nodata,
             )
-
-        logging.info("Wrote out to " + outfile)
-
+            logging.info("Wrote out to " + outfile)
+        else:
+            logging.info("Nodata so skipped " + outfile)
         cogs[band] = outfile
 
     # return dict of cogs by band
