@@ -2,11 +2,10 @@ import os.path
 from tempfile import TemporaryDirectory
 
 import pystac
-from stactools.testing import CliTestCase, TestData
+from stactools.testing import CliTestCase
 
 from stactools.palsar.commands import create_palsar_command
-
-test_data = TestData(__file__)
+from tests import ALOS2_PALSAR_FNF_FILENAME, test_data
 
 
 class CommandsTest(CliTestCase):
@@ -43,16 +42,14 @@ class CommandsTest(CliTestCase):
     def test_create_item(self):
         with TemporaryDirectory() as tmp_dir:
             # Run your custom create-item command and validate
-            test_path = test_data.get_path("data-files/")
-            cog_path = os.path.join(test_path, [
-                d for d in os.listdir(test_path) if d.lower().endswith(".tif")
-            ][0])
+            test_path = test_data.get_path(ALOS2_PALSAR_FNF_FILENAME)
 
             result = self.run_command([
                 "palsar",
                 "create-item",
-                cog_path,
+                test_path,
                 tmp_dir,
+                "-c",
             ])
             self.assertEqual(result.exit_code,
                              0,
@@ -62,7 +59,7 @@ class CommandsTest(CliTestCase):
             self.assertEqual(len(jsons), 1)
 
             item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
-            self.assertEqual(item.id, "S16W150_15_MOS")
+            self.assertEqual(item.id, "S16W150_15_FNF")
             # self.assertEqual(item.other_attr...
 
             item.validate()

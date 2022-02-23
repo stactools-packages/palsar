@@ -5,8 +5,7 @@ from tempfile import TemporaryDirectory
 import pystac
 
 from stactools.palsar import cog, stac
-from tests import (ALOS2_PALSAR_FNF_FILENAME, ALOS2_PALSAR_MOS_FILENAME,
-                   test_data)
+from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
 
 
 class StacTest(unittest.TestCase):
@@ -23,20 +22,6 @@ class StacTest(unittest.TestCase):
 
         # Validate
         collection.validate()
-
-    def test_cogify(self):
-        # Test a FNF example
-        path = test_data.get_path(ALOS2_PALSAR_FNF_FILENAME)
-        product = "FNF"
-        with TemporaryDirectory() as directory:
-            cogs = cog.cogify(tile_path=path, output_directory=directory)
-
-            print(cogs)
-            c_path = cogs["C"]
-            self.assertEqual(
-                os.path.basename(
-                    path.replace(".tar.gz", ".tif").replace(product, 'C')),
-                os.path.basename(c_path))
 
     def test_create_item(self):
         # Write tests for each for the creation of STAC Items
