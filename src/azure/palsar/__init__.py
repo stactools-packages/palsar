@@ -9,15 +9,6 @@ from stactools.palsar import cog, stac
 
 blob_service_client = BlobServiceClient.from_connection_string(os.environ["AzureWebJobsStorage"])
 
-def process_cogfile(blob_client, cogfile) -> None:
-    # Upload the created file
-    with open(cogfile, "rb") as data:
-        try:
-            blob_client.upload_blob(data, overwrite=True)
-            logging.info("Success for " + cogfile)
-        except Exception as e:
-            logging.info(f"Exception {e} for {cogfile}")
-
 def main(msg: func.QueueMessage) -> None:
     start_time = time.time()
     body = msg.get_body().decode('utf-8')
@@ -27,7 +18,16 @@ def main(msg: func.QueueMessage) -> None:
         filename = body
     logging.info('Python queue trigger function processed a queue item: %s',
                  body)
-    rootdir, _ = os.path.split(filename)
+    rootdir, archive_name = os.path.split(filename)
+    output_container = None
+    if "MOS" in archive_name:
+        output_container = "output-mos"
+    if "FNF" in archive_name:
+        output_container = "output-fnf"
+    if output_container is None:
+        logging.error("Neither MOS or FNF archive")
+        return -1
+
     blob_client = blob_service_client.get_blob_client(container="dltest",
                                                       blob=filename)
     if blob_client.exists():
@@ -44,14 +44,19 @@ def main(msg: func.QueueMessage) -> None:
         logging.info('Saved COGs at' + str(cogs))
         for cogfile in list(cogs.values()):
             _, tail = os.path.split(cogfile)
-            blob_client = blob_service_client.get_blob_client(container="output", blob=rootdir + '/' + tail)
-            process_cogfile(blob_client, cogfile)
+            blob_client = blob_service_client.get_blob_client(container=output_container, blob=rootdir + '/' + tail)
+            with open(cogfile, "rb") as data:
+                try:
+                    blob_client.upload_blob(data, overwrite=True)
+                    logging.info("Success for " + cogfile)
+                except Exception as e:
+                    logging.info(f"Exception {e} for {cogfile}")
 
-        url=os.path.dirname(blob_client.url)
-        item = stac.create_item(cogs, url)
+        base_url=os.path.dirname(blob_client.url)
+        item = stac.create_item(cogs, base_url)
         json_file = '_'.join((os.path.basename(filename)).split("_")[0:3])
         json_path = os.path.join('/tmp', f'{json_file}.json')
-        item.set_self_href(os.path.join(url, os.path.basename(json_path)))
+        item.set_self_href(os.path.join(base_url, os.path.basename(json_path)))
         # TODO: gracefully fail if validate doesn't work
         item.validate()
         item.save_object(dest_href=json_path)
@@ -59,7 +64,7 @@ def main(msg: func.QueueMessage) -> None:
         logging.info("Saved STAC JSON at " + json_path)
 
         _, tail = os.path.split(json_path)
-        blob_client = blob_service_client.get_blob_client(container="output", blob=rootdir + '/' + tail)
+        blob_client = blob_service_client.get_blob_client(container=output_container, blob=rootdir + '/' + tail)
         with open(json_path, "rb") as data:
             try:
                 blob_client.upload_blob(data, overwrite=True)
