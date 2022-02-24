@@ -9,15 +9,12 @@ from stactools.palsar import cog, stac
 
 blob_service_client = BlobServiceClient.from_connection_string(os.environ["AzureWebJobsStorage"])
 
-def process_cogfile(rootdir, cogfile) -> None:
-    _, tail = os.path.split(cogfile)
-    blob_client = blob_service_client.get_blob_client(
-        container="output", blob=rootdir + '/' + tail)
+def process_cogfile(blob_client, cogfile) -> None:
     # Upload the created file
     with open(cogfile, "rb") as data:
         try:
             blob_client.upload_blob(data, overwrite=True)
-            logging.info("Success for " + cogfile + "@" + rootdir + tail)
+            logging.info("Success for " + cogfile)
         except Exception as e:
             logging.info(f"Exception {e} for {cogfile}")
 
@@ -46,9 +43,11 @@ def main(msg: func.QueueMessage) -> None:
 
         logging.info('Saved COGs at' + str(cogs))
         for cogfile in list(cogs.values()):
-            process_cogfile(rootdir, cogfile)
+            _, tail = os.path.split(cogfile)
+            blob_client = blob_service_client.get_blob_client(container="output", blob=rootdir + '/' + tail)
+            process_cogfile(blob_client, cogfile)
 
-        url="http://google.no"
+        url=os.path.dirname(blob_client.url)
         item = stac.create_item(cogs, url)
         json_file = '_'.join((os.path.basename(filename)).split("_")[0:3])
         json_path = os.path.join('/tmp', f'{json_file}.json')
