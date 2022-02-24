@@ -41,20 +41,20 @@ def main(msg: func.QueueMessage) -> None:
         with open(input_targz_filepath, 'wb') as target_file:
             bd.readinto(target_file)
         logging.info('Saved input at ' + input_targz_filepath)
-        
+
         cogs = cog.cogify(input_targz_filepath, '/tmp')
-        
+
         logging.info('Saved COGs at' + str(cogs))
         for cogfile in list(cogs.values()):
             process_cogfile(rootdir, cogfile)
 
         url="http://google.no"
-        item = stac.create_item(cogs, url) 
-        json_file = '_'.join((os.path.basename(filename)).split("_")[0:3]) 
-        json_path = os.path.join('/tmp', f'{json_file}.json') 
-        item.set_self_href(os.path.join(url, os.path.basename(json_path))) 
-        # TODO: gracefully fail if validate doesn't work 
-        item.validate() 
+        item = stac.create_item(cogs, url)
+        json_file = '_'.join((os.path.basename(filename)).split("_")[0:3])
+        json_path = os.path.join('/tmp', f'{json_file}.json')
+        item.set_self_href(os.path.join(url, os.path.basename(json_path)))
+        # TODO: gracefully fail if validate doesn't work
+        item.validate()
         item.save_object(dest_href=json_path)
 
         logging.info("Saved STAC JSON at " + json_path)
