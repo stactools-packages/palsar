@@ -48,8 +48,9 @@ def main(msg: func.QueueMessage) -> None:
         upload_cogs(upload_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
 
-        base_url = os.path.join(remove_query_params_and_fragment(output_blob_service_client.url),
-                                output_container_name, output_directory)
+        base_url = os.path.join(
+            remove_query_params_and_fragment(output_blob_service_client.url),
+            output_container_name, output_directory)
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
 
