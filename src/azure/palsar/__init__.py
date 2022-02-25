@@ -71,9 +71,9 @@ def main(msg: func.QueueMessage) -> None:
 
 def derive_output_directory(archive_name):
     output_directory = None
-    if "MOS" in archive_name:
-        output_directory = "alos_fnf_mosaic"
     if "FNF" in archive_name:
+        output_directory = "alos_fnf_mosaic"
+    if "MOS" in archive_name:
         output_directory = "alos_palsar_mosaic"
     return output_directory
 
