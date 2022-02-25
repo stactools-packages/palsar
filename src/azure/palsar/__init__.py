@@ -13,7 +13,7 @@ output_blob_service_client = BlobServiceClient.from_connection_string(
     os.environ["ConnectionStringOutput"])
 
 
-def main(msg: func.QueueMessage) -> int:
+def main(msg: func.QueueMessage) -> None:
     input_container = "dltest"
 
     start_time = time.time()
@@ -29,15 +29,17 @@ def main(msg: func.QueueMessage) -> int:
     output_container_name = derive_output_container(archive_name)
     if output_container_name is None:
         logging.error("Neither MOS or FNF archive")
-        return -1
+        exit
 
     blob_client = input_blob_service_client.get_blob_client(
         container=input_container, blob=source_archive_file)
     if blob_client.exists():
-        cogs = download_input_tgz(source_archive_file, blob_client)
+        _, file = os.path.split(source_archive_file)
+        input_targz_filepath = f'/tmp/{file}'
+        download_input_tgz(input_targz_filepath, blob_client)
 
-        cogs = cog.cogify(source_archive_file, '/tmp')
-        logging.info(f"COGified {source_archive_file} and saved COGs at {str(cogs)}")
+        cogs = cog.cogify(input_targz_filepath, '/tmp')
+        logging.info(f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
 
         base_url = upload_cogs(archive_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
@@ -62,7 +64,6 @@ def main(msg: func.QueueMessage) -> int:
         logging.error(
             f"File does not exist at {source_archive_file} in container {input_container}"
         )
-    return 0
 
 
 def derive_output_container(archive_name):
@@ -126,11 +127,8 @@ def generate_stac(source_archive, cogs, base_url):
     return json_path
 
 
-def download_input_tgz(input_filename, blob_client):
+def download_input_tgz(input_targz_filepath, blob_client):
     bd = blob_client.download_blob()
-
-    _, file = os.path.split(input_filename)
-    input_targz_filepath = f'/tmp/{file}'
     with open(input_targz_filepath, 'wb') as target_file:
         bd.readinto(target_file)
 
