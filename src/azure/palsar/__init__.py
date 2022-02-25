@@ -39,7 +39,8 @@ def main(msg: func.QueueMessage) -> None:
         download_input_tgz(input_targz_filepath, blob_client)
 
         cogs = cog.cogify(input_targz_filepath, '/tmp')
-        logging.info(f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
+        logging.info(
+            f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
 
         base_url = upload_cogs(archive_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
