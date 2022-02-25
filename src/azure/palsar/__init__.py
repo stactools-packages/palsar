@@ -138,5 +138,6 @@ def download_input_tgz(input_targz_filepath, blob_client):
 
     logging.info(f"Saved input at {input_targz_filepath}")
 
+
 def remove_query_params_and_fragment(url):
     return urlunsplit(urlsplit(url)._replace(query="", fragment=""))
