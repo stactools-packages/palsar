@@ -7,8 +7,10 @@ from azure.storage.blob import BlobServiceClient  # type: ignore
 
 from stactools.palsar import cog, stac
 
-blob_service_client = BlobServiceClient.from_connection_string(
+input_blob_service_client = BlobServiceClient.from_connection_string(
     os.environ["AzureWebJobsStorage"])
+output_blob_service_client = BlobServiceClient.from_connection_string(
+    os.environ["ConnectionStringOutput"])
 
 
 def main(msg: func.QueueMessage) -> int:
@@ -29,15 +31,20 @@ def main(msg: func.QueueMessage) -> int:
         logging.error("Neither MOS or FNF archive")
         return -1
 
-    blob_client = blob_service_client.get_blob_client(
+    blob_client = input_blob_service_client.get_blob_client(
         container=input_container, blob=source_archive_file)
     if blob_client.exists():
-        cogs = download_and_process_cogs(source_archive_file, blob_client)
-        logging.info(f"Saved COGs at {str(cogs)}")
+        cogs = download_input_tgz(source_archive_file, blob_client)
+
+        cogs = cog.cogify(source_archive_file, '/tmp')
+        logging.info(f"COGified {source_archive_file} and saved COGs at {str(cogs)}")
+
         base_url = upload_cogs(archive_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
+
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
+
         stac_url = upload_stac(archive_rootdir, output_container_name,
                                stac_file_path)
         logging.info(f"Uploaded STAC JSON at {str(stac_url)}")
@@ -70,7 +77,7 @@ def derive_output_container(archive_name):
 def upload_stac(rootdir, output_container_name, json_file_path):
     _, stac_file = os.path.split(json_file_path)
     output_stac_path = f'{rootdir}/{stac_file}'
-    blob_client = blob_service_client.get_blob_client(
+    blob_client = output_blob_service_client.get_blob_client(
         container=output_container_name, blob=output_stac_path)
     with open(json_file_path, "rb") as data:
         try:
@@ -91,7 +98,7 @@ def cleanup_cogs(cogs):
 def upload_cogs(rootdir, output_container, cogs):
     for cogfile in list(cogs.values()):
         _, cog_file = os.path.split(cogfile)
-        blob_client = blob_service_client.get_blob_client(
+        blob_client = output_blob_service_client.get_blob_client(
             container=output_container, blob=rootdir + '/' + cog_file)
         with open(cogfile, "rb") as data:
             try:
@@ -119,7 +126,7 @@ def generate_stac(source_archive, cogs, base_url):
     return json_path
 
 
-def download_and_process_cogs(input_filename, blob_client):
+def download_input_tgz(input_filename, blob_client):
     bd = blob_client.download_blob()
 
     _, file = os.path.split(input_filename)
@@ -128,7 +135,3 @@ def download_and_process_cogs(input_filename, blob_client):
         bd.readinto(target_file)
 
     logging.info(f"Saved input at {input_targz_filepath}")
-
-    cogs = cog.cogify(input_targz_filepath, '/tmp')
-    logging.info(f"COGified {input_targz_filepath}")
-    return cogs
