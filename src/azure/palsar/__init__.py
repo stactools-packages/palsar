@@ -26,10 +26,12 @@ def main(msg: func.QueueMessage) -> None:
                  body)
 
     archive_rootdir, archive_name = os.path.split(source_archive_file)
-    output_container_name = derive_output_container(archive_name)
-    if output_container_name is None:
+    output_container_name = 'palsar'
+    output_directory = derive_output_directory(archive_name)
+    if output_directory is None:
         logging.error("Neither MOS or FNF archive")
         exit
+    upload_rootdir = f'{output_directory}/{archive_rootdir}'
 
     blob_client = input_blob_service_client.get_blob_client(
         container=input_container, blob=source_archive_file)
@@ -42,13 +44,13 @@ def main(msg: func.QueueMessage) -> None:
         logging.info(
             f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
 
-        base_url = upload_cogs(archive_rootdir, output_container_name, cogs)
+        base_url = upload_cogs(upload_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
 
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
 
-        stac_url = upload_stac(archive_rootdir, output_container_name,
+        stac_url = upload_stac(upload_rootdir, output_container_name,
                                stac_file_path)
         logging.info(f"Uploaded STAC JSON at {str(stac_url)}")
 
@@ -67,13 +69,13 @@ def main(msg: func.QueueMessage) -> None:
         )
 
 
-def derive_output_container(archive_name):
-    output_container_name = None
+def derive_output_directory(archive_name):
+    output_directory = None
     if "MOS" in archive_name:
-        output_container_name = "output-mos"
+        output_directory = "alos_fnf_mosaic"
     if "FNF" in archive_name:
-        output_container_name = "output-fnf"
-    return output_container_name
+        output_directory = "alos_palsar_mosaic"
+    return output_directory
 
 
 def upload_stac(rootdir, output_container_name, json_file_path):
@@ -85,7 +87,7 @@ def upload_stac(rootdir, output_container_name, json_file_path):
         try:
             blob_client.upload_blob(data, overwrite=True)
             logging.info(
-                f"Successfully uploaded STAC JSON for {output_stac_path}")
+                f"Successfully uploaded STAC JSON to {output_stac_path}")
             return blob_client.url
         except Exception as e:
             logging.info(f"Exception {e} for {json_file_path}")
@@ -100,12 +102,13 @@ def cleanup_cogs(cogs):
 def upload_cogs(rootdir, output_container, cogs):
     for cogfile in list(cogs.values()):
         _, cog_file = os.path.split(cogfile)
+        output_cog_path = f'{rootdir}/{cog_file}'
         blob_client = output_blob_service_client.get_blob_client(
-            container=output_container, blob=rootdir + '/' + cog_file)
+            container=output_container, blob=output_cog_path)
         with open(cogfile, "rb") as data:
             try:
                 blob_client.upload_blob(data, overwrite=True)
-                logging.info(f"Success for {cogfile}")
+                logging.info(f"Successfully uploaded COG to {output_cog_path}")
             except Exception as e:
                 logging.info(f"Exception {e} for {cogfile}")
 
