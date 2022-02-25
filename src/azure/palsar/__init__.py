@@ -57,6 +57,7 @@ def main(msg: func.QueueMessage) -> int:
         )
     return 0
 
+
 def derive_output_container(archive_name):
     output_container_name = None
     if "MOS" in archive_name:
