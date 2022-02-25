@@ -54,7 +54,7 @@ def main(msg: func.QueueMessage) -> None:
     else:
         logging.error(
             f"File does not exist at {source_archive_file} in container {input_container}"
-            )
+        )
 
 
 def derive_output_container(archive_name):
