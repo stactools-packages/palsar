@@ -35,7 +35,7 @@ def main(msg: func.QueueMessage) -> None:
         cogs = download_and_process_cogs(source_archive_file, blob_client)
         logging.info(f"Saved COGs at {str(cogs)}")
         base_url = upload_cogs(archive_rootdir, output_container_name, cogs)
-        logging.info(f"Uploaded COGs")
+        logging.info("Uploaded COGs")
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
         stac_url = upload_stac(archive_rootdir, output_container_name,
@@ -43,10 +43,10 @@ def main(msg: func.QueueMessage) -> None:
         logging.info(f"Uploaded STAC JSON at {str(stac_url)}")
 
         cleanup_cogs(cogs)
-        logging.info(f"Cleaned up COGs")
+        logging.info("Cleaned up COGs")
 
         os.remove(stac_file_path)
-        logging.info(f"Cleaned up STAC file")
+        logging.info("Cleaned up STAC file")
 
         end_time = time.time()
         logging.info(f"Runtime is {end_time - start_time}")
