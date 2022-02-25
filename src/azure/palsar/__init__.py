@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from urllib.parse import urljoin, urlparse
 
 import azure.functions as func  # type: ignore
 from azure.storage.blob import BlobServiceClient  # type: ignore
@@ -31,23 +32,25 @@ def main(msg: func.QueueMessage) -> None:
     if output_directory is None:
         logging.error("Neither MOS or FNF archive")
         exit
-    upload_rootdir = f'{output_directory}/{archive_rootdir}'
+    upload_rootdir = f'{output_directory}'
 
     blob_client = input_blob_service_client.get_blob_client(
         container=input_container, blob=source_archive_file)
     if blob_client.exists():
         _, file = os.path.split(source_archive_file)
-        input_targz_filepath = f'/tmp/{file}'
+        input_targz_filepath = os.path.join('/tmp', file)
         download_input_tgz(input_targz_filepath, blob_client)
 
         cogs = cog.cogify(input_targz_filepath, '/tmp')
         logging.info(
             f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
 
-        base_url = upload_cogs(upload_rootdir, output_container_name, cogs)
+        uploaded_cogs = upload_cogs(upload_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
 
-        stac_file_path = generate_stac(source_archive_file, cogs, base_url)
+        url_parts = urlparse(output_blob_service_client.url)
+        base_url = os.path.join(f'{url_parts.scheme}://{url_parts.netloc}{url_parts.path}', output_container_name, output_directory)
+        stac_file_path = generate_stac(source_archive_file, uploaded_cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
 
         stac_url = upload_stac(upload_rootdir, output_container_name,
@@ -100,7 +103,9 @@ def cleanup_cogs(cogs):
 
 
 def upload_cogs(rootdir, output_container, cogs):
-    for cogfile in list(cogs.values()):
+    output_cogs = {}
+    for key in list(cogs.keys()):
+        cogfile = cogs[key]
         _, cog_file = os.path.split(cogfile)
         output_cog_path = f'{rootdir}/{cog_file}'
         blob_client = output_blob_service_client.get_blob_client(
@@ -109,11 +114,11 @@ def upload_cogs(rootdir, output_container, cogs):
             try:
                 blob_client.upload_blob(data, overwrite=True)
                 logging.info(f"Successfully uploaded COG to {output_cog_path}")
+                output_cogs[key] = blob_client.url
             except Exception as e:
                 logging.info(f"Exception {e} for {cogfile}")
 
-    base_url = os.path.dirname(blob_client.url)
-    return base_url
+    return output_cogs
 
 
 def generate_stac(source_archive, cogs, base_url):
