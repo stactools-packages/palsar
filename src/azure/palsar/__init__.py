@@ -11,7 +11,7 @@ blob_service_client = BlobServiceClient.from_connection_string(
     os.environ["AzureWebJobsStorage"])
 
 
-def main(msg: func.QueueMessage) -> None:
+def main(msg: func.QueueMessage) -> int:
     input_container = "dltest"
 
     start_time = time.time()
@@ -55,7 +55,7 @@ def main(msg: func.QueueMessage) -> None:
         logging.error(
             f"File does not exist at {source_archive_file} in container {input_container}"
         )
-
+    return 0
 
 def derive_output_container(archive_name):
     output_container_name = None
