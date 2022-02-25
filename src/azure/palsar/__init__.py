@@ -10,6 +10,7 @@ from stactools.palsar import cog, stac
 blob_service_client = BlobServiceClient.from_connection_string(
     os.environ["AzureWebJobsStorage"])
 
+
 def main(msg: func.QueueMessage) -> None:
     input_container = "dltest"
 
@@ -28,8 +29,8 @@ def main(msg: func.QueueMessage) -> None:
         logging.error("Neither MOS or FNF archive")
         return -1
 
-    blob_client = blob_service_client.get_blob_client(container=input_container,
-                                                      blob=source_archive_file)
+    blob_client = blob_service_client.get_blob_client(
+        container=input_container, blob=source_archive_file)
     if blob_client.exists():
         cogs = download_and_process_cogs(source_archive_file, blob_client)
         logging.info(f"Saved COGs at {str(cogs)}")
@@ -37,7 +38,8 @@ def main(msg: func.QueueMessage) -> None:
         logging.info(f"Uploaded COGs")
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
-        stac_url = upload_stac(archive_rootdir, output_container_name, stac_file_path)
+        stac_url = upload_stac(archive_rootdir, output_container_name,
+                               stac_file_path)
         logging.info(f"Uploaded STAC JSON at {str(stac_url)}")
 
         cleanup_cogs(cogs)
@@ -50,7 +52,9 @@ def main(msg: func.QueueMessage) -> None:
         logging.info(f"Runtime is {end_time - start_time}")
         logging.info("All wrapped up. Exiting")
     else:
-        logging.error(f"File does not exist at {source_archive_file} in container {input_container}")
+        logging.error(
+            f"File does not exist at {source_archive_file} in container {input_container}"
+            )
 
 
 def derive_output_container(archive_name):
@@ -66,11 +70,12 @@ def upload_stac(rootdir, output_container_name, json_file_path):
     _, stac_file = os.path.split(json_file_path)
     output_stac_path = f'{rootdir}/{stac_file}'
     blob_client = blob_service_client.get_blob_client(
-            container=output_container_name, blob=output_stac_path)
+        container=output_container_name, blob=output_stac_path)
     with open(json_file_path, "rb") as data:
         try:
             blob_client.upload_blob(data, overwrite=True)
-            logging.info(f"Successfully uploaded STAC JSON for {output_stac_path}")
+            logging.info(
+                f"Successfully uploaded STAC JSON for {output_stac_path}")
             return blob_client.url
         except Exception as e:
             logging.info(f"Exception {e} for {json_file_path}")
