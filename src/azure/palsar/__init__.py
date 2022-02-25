@@ -8,7 +8,7 @@ from azure.storage.blob import BlobServiceClient  # type: ignore
 from stactools.palsar import cog, stac
 
 input_blob_service_client = BlobServiceClient.from_connection_string(
-    os.environ["AzureWebJobsStorage"])
+    os.environ["ConnectionStringInput"])
 output_blob_service_client = BlobServiceClient.from_connection_string(
     os.environ["ConnectionStringOutput"])
 
