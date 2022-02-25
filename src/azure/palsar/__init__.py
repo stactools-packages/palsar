@@ -52,6 +52,7 @@ def main(msg: func.QueueMessage) -> None:
     else:
         logging.error(f"File does not exist at {source_archive_file} in container {input_container}")
 
+
 def derive_output_container(archive_name):
     output_container_name = None
     if "MOS" in archive_name:
@@ -59,6 +60,7 @@ def derive_output_container(archive_name):
     if "FNF" in archive_name:
         output_container_name = "output-fnf"
     return output_container_name
+
 
 def upload_stac(rootdir, output_container_name, json_file_path):
     _, stac_file = os.path.split(json_file_path)
@@ -73,16 +75,18 @@ def upload_stac(rootdir, output_container_name, json_file_path):
         except Exception as e:
             logging.info(f"Exception {e} for {json_file_path}")
 
+
 def cleanup_cogs(cogs):
     for cogfile in list(cogs.values()):
         os.remove(cogfile)
         logging.info(f"Cleaned up {cogfile}")
 
+
 def upload_cogs(rootdir, output_container, cogs):
     for cogfile in list(cogs.values()):
         _, cog_file = os.path.split(cogfile)
         blob_client = blob_service_client.get_blob_client(
-                container=output_container, blob=rootdir + '/' + cog_file)
+            container=output_container, blob=rootdir + '/' + cog_file)
         with open(cogfile, "rb") as data:
             try:
                 blob_client.upload_blob(data, overwrite=True)
@@ -92,6 +96,7 @@ def upload_cogs(rootdir, output_container, cogs):
 
     base_url = os.path.dirname(blob_client.url)
     return base_url
+
 
 def generate_stac(source_archive, cogs, base_url):
     source_basename = os.path.basename(source_archive)
@@ -106,6 +111,7 @@ def generate_stac(source_archive, cogs, base_url):
 
     logging.info(f"Saved STAC JSON at {json_path}")
     return json_path
+
 
 def download_and_process_cogs(input_filename, blob_client):
     bd = blob_client.download_blob()
