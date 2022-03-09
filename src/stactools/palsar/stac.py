@@ -64,6 +64,7 @@ def create_collection(product: str) -> Collection:
     )
 
     collection.license = "proprietary"
+    collection.add_links(co.ALOS_PALSAR_LINKS)
 
     return collection
 
@@ -131,7 +132,6 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     )
 
     item.collection_id = collection
-    item.add_links(co.ALOS_PALSAR_LINKS)
     item.links.append(
         Link(rel="collection",
              target=os.path.join(root_href, f"{collection}.json")))
@@ -141,8 +141,6 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         item.common_metadata.platform = co.ALOS_PALSAR_PLATFORMS[1]
         item.common_metadata.instruments = [co.ALOS_PALSAR_INSTRUMENTS[1]]
     item.common_metadata.gsd = co.ALOS_PALSAR_GSD
-    item.common_metadata.providers = co.ALOS_PALSAR_PROVIDERS
-    item.common_metadata.license = "proprietary"
 
     # It is a good idea to include proj attributes to optimize for libs like stac-vrt
     proj_attrs = ProjectionExtension.ext(item, add_if_missing=True)
