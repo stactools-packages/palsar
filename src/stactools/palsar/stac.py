@@ -6,7 +6,10 @@ from typing import Dict
 import rasterio  # type: ignore
 from pystac import (Asset, CatalogType, Collection, Extent, Item, Link,
                     MediaType, SpatialExtent, Summaries, TemporalExtent)
+from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.projection import ProjectionExtension
+# from pystac.extensions.raster import RasterExtension
+from pystac.extensions.sar import SarExtension
 from shapely.geometry import box, mapping  # type: ignore
 
 from stactools.palsar import constants as co
@@ -61,7 +64,16 @@ def create_collection(product: str) -> Collection:
         extent=extent,
         catalog_type=CatalogType.RELATIVE_PUBLISHED,
         summaries=Summaries(summaries),
+        stac_extensions=[
+            ItemAssetsExtension.get_schema_uri(),
+        ],
     )
+
+    assets = ItemAssetsExtension.ext(collection, add_if_missing=True)
+    if product == 'FNF':
+        assets.item_assets = co.ALOS_FNF_ASSETS
+    else:
+        assets.item_assets = co.ALOS_MOS_ASSETS
 
     collection.license = "proprietary"
     collection.add_links(co.ALOS_PALSAR_LINKS)
@@ -148,6 +160,12 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     proj_attrs.bbox = bbox
     proj_attrs.shape = shape  # Raster shape
     proj_attrs.transform = transform  # Raster GeoTransform
+
+    sar = SarExtension.ext(item, add_if_missing=True)
+    sar.frequency_band = co.ALOS_FREQUENCY_BAND
+    sar.polarizations = co.ALOS_POLARIZATIONS
+    sar.instrument_mode = "FBD"
+    sar.product_type = ""
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over

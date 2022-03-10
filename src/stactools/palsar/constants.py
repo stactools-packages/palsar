@@ -3,8 +3,9 @@ from typing import Optional
 
 from pystac import Link, Provider
 from pystac import ProviderRole as PR
-# from pystac.extensions.sar import
+from pystac.extensions import sar
 from pystac.extensions.eo import Band
+from pystac.extensions.item_assets import AssetDefinition
 from pystac.utils import str_to_datetime
 
 # TODO: These values apply to data from 2015 and newer,
@@ -42,40 +43,56 @@ ALOS_PALSAR_LINKS = [
          ALOS_DESCRIPTION,
          extra_fields={"description": "Also includes data usage information"})
 ]
-ALOS_PALSAR_BANDS = {
-    1:
-    Band.create(
-        common_name="HH",
-        name="HH",
-        description="HH polarization backscattering coefficient, 16-bit DN.",
-    ),
-    2:
-    Band.create(
-        common_name="HV",
-        name="HV",
-        description="HV polarization backscattering coefficient, 16-bit DN.",
-    ),
-    3:
-    Band.create(
-        common_name="angle",
-        name="linci",
-        description="Local incidence angle (degrees).",
-    ),
-    4:
-    Band.create(
-        common_name="date",
-        name="date",
-        description="Observation date (days since Jan 1, 1970).",
-    ),
-    5:
-    Band.create(
-        common_name="qa",
-        name="mask",
-        description="Quality Mask",
-    ),
-    6:
-    Band.create(
-        name="FNF",
-        description="Forest vs Non-Forest classification",
-    ),
+
+ALOS_FREQUENCY_BAND = sar.FrequencyBand.L
+ALOS_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
+
+ALOS_MOS_ASSETS = {
+    "HH":
+    AssetDefinition({
+        "title": "HH",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description":
+        "HH polarization backscattering coefficient, 16-bit DN.",
+        "role": "data"
+    }),
+    "HV":
+    AssetDefinition({
+        "title": "HH",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description":
+        "HH polarization backscattering coefficient, 16-bit DN.",
+        "role": "data"
+    }),
+    "linci":
+    AssetDefinition({
+        "title": "linci",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "Local incidence angle (degrees).",
+        "role": "local-incidence-angle",
+    }),
+    "date":
+    AssetDefinition({
+        "title": "date",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "Observation date (days since Jan 1, 1970).",
+        "role": "date"
+    }),
+    "mask":
+    AssetDefinition({
+        "title": "mask",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "Quality Mask",
+        "role": "data-mask"
+    }),
+}
+
+ALOS_FNF_ASSETS = {
+    "FNF":
+    AssetDefinition({
+        "title": "FNF",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "Forest vs Non-Forest classification",
+        "role": "data"
+    })
 }
