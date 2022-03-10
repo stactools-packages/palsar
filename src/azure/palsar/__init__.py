@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from urllib.parse import urlsplit, urlunsplit
 
 import azure.functions as func  # type: ignore
 from azure.storage.blob import BlobServiceClient  # type: ignore
@@ -31,22 +32,25 @@ def main(msg: func.QueueMessage) -> None:
     if output_directory is None:
         logging.error("Neither MOS or FNF archive")
         exit
-    upload_rootdir = f'{output_directory}/{archive_rootdir}'
+    upload_rootdir = f'{output_directory}'
 
     blob_client = input_blob_service_client.get_blob_client(
         container=input_container, blob=source_archive_file)
     if blob_client.exists():
         _, file = os.path.split(source_archive_file)
-        input_targz_filepath = f'/tmp/{file}'
+        input_targz_filepath = os.path.join('/tmp', file)
         download_input_tgz(input_targz_filepath, blob_client)
 
         cogs = cog.cogify(input_targz_filepath, '/tmp')
         logging.info(
             f"COGified {input_targz_filepath} and saved COGs at {str(cogs)}")
 
-        base_url = upload_cogs(upload_rootdir, output_container_name, cogs)
+        upload_cogs(upload_rootdir, output_container_name, cogs)
         logging.info("Uploaded COGs")
 
+        base_url = os.path.join(
+            remove_query_params_and_fragment(output_blob_service_client.url),
+            output_container_name, output_directory)
         stac_file_path = generate_stac(source_archive_file, cogs, base_url)
         logging.info(f"Generated STAC JSON at {str(stac_file_path)}")
 
@@ -71,9 +75,9 @@ def main(msg: func.QueueMessage) -> None:
 
 def derive_output_directory(archive_name):
     output_directory = None
-    if "MOS" in archive_name:
-        output_directory = "alos_fnf_mosaic"
     if "FNF" in archive_name:
+        output_directory = "alos_fnf_mosaic"
+    if "MOS" in archive_name:
         output_directory = "alos_palsar_mosaic"
     return output_directory
 
@@ -99,10 +103,11 @@ def cleanup_cogs(cogs):
         logging.info(f"Cleaned up {cogfile}")
 
 
-def upload_cogs(rootdir, output_container, cogs):
-    for cogfile in list(cogs.values()):
+def upload_cogs(output_rootdir, output_container, cogs):
+    for key in list(cogs.keys()):
+        cogfile = cogs[key]
         _, cog_file = os.path.split(cogfile)
-        output_cog_path = f'{rootdir}/{cog_file}'
+        output_cog_path = f'{output_rootdir}/{cog_file}'
         blob_client = output_blob_service_client.get_blob_client(
             container=output_container, blob=output_cog_path)
         with open(cogfile, "rb") as data:
@@ -111,9 +116,6 @@ def upload_cogs(rootdir, output_container, cogs):
                 logging.info(f"Successfully uploaded COG to {output_cog_path}")
             except Exception as e:
                 logging.info(f"Exception {e} for {cogfile}")
-
-    base_url = os.path.dirname(blob_client.url)
-    return base_url
 
 
 def generate_stac(source_archive, cogs, base_url):
@@ -137,3 +139,7 @@ def download_input_tgz(input_targz_filepath, blob_client):
         bd.readinto(target_file)
 
     logging.info(f"Saved input at {input_targz_filepath}")
+
+
+def remove_query_params_and_fragment(url):
+    return urlunsplit(urlsplit(url)._replace(query="", fragment=""))
