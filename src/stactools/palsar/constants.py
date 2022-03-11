@@ -42,8 +42,7 @@ ALOS_PALSAR_LINKS = [
          "application/pdf",
          ALOS_DESCRIPTION,
          extra_fields={"description": "Also includes data usage information"}),
-    Link("license",
-         "https://earth.jaxa.jp/policy/en.html",
+    Link("license", "https://earth.jaxa.jp/policy/en.html",
          "JAXA Terms of Use of Research Data")
 ]
 
