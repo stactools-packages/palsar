@@ -5,6 +5,7 @@ from pystac import Link, Provider
 from pystac import ProviderRole as PR
 from pystac.extensions import sar
 from pystac.extensions.item_assets import AssetDefinition
+from pystac.extensions.raster import DataType
 from pystac.utils import str_to_datetime
 
 # TODO: These values apply to data from 2015 and newer,
@@ -100,27 +101,21 @@ ALOS_FNF_ASSETS = {
 
 ALOS_BANDS = {
     "HH": {
-        "data_type": "uint16",
-        "sampling": None,
+        "data_type": DataType.UINT16,
     },
     "HV": {
-        "data_type": "uint16",
-        "sampling": None,
+        "data_type": DataType.UINT16,
     },
     "linci": {
-        "data_type": "uint8",
-        "sampling": None,
+        "data_type": DataType.UINT8,
     },
     "date": {
-        "data_type": "uint16",
-        "sampling": None,
+        "data_type": DataType.UINT16,
     },
     "mask": {
-        "data_type": "uint8",
-        "sampling": None,
+        "data_type": DataType.UINT8,
     },
     "C": {
-        "data_type": "uint8",
-        "sampling": None,
+        "data_type": DataType.UINT8,
     },
 }

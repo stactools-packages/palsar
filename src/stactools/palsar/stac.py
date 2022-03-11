@@ -202,11 +202,12 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
                     "date": 1,
                     "C": 0
                 }
-                nodata = nodata_by_band.get(key)
+                nodata = nodata_by_band.get(key, 0)
             else:
                 nodata = 0
-            raster_band['nodata'] = nodata
-            print(raster_band)
-            raster.bands = [RasterBand.create(*raster_band)]
+            raster.bands = [
+                RasterBand.create(nodata=nodata,
+                                  data_type=raster_band.get('data_type'))
+            ]
 
     return item
