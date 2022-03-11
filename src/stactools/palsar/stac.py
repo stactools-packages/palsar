@@ -49,23 +49,28 @@ def create_collection(product: str) -> Collection:
         id = "alos_fnf_mosaic"
         title = "ALOS Forest/Non-Forest Annual Mosaic"
         description = co.ALOS_FNF_DESCRIPTION
+        keywords = ['ALOS', 'JAXA', 'Forest', 'Land Cover', 'Global']
     else:
         id = "alos_palsar_mosaic"
         title = "ALOS PALSAR Annual Mosaic"
         description = co.ALOS_MOS_DESCRIPTION
+        keywords = ['ALOS', 'JAXA', 'Remote Sensing', 'Global']
 
     collection = Collection(
-        # TODO: set in constants
         id=id,
         title=title,
         description=description,
         license="proprietary",
         providers=providers,
         extent=extent,
+        keywords=keywords,
         catalog_type=CatalogType.RELATIVE_PUBLISHED,
         summaries=Summaries(summaries),
         stac_extensions=[
             ItemAssetsExtension.get_schema_uri(),
+            SarExtension.get_schema_uri(),
+            ProjectionExtension.get_schema_uri(),
+            RasterExtension.get_schema_uri(),
         ],
     )
 
@@ -75,7 +80,6 @@ def create_collection(product: str) -> Collection:
     else:
         assets.item_assets = co.ALOS_MOS_ASSETS
 
-    collection.license = "proprietary"
     collection.add_links(co.ALOS_PALSAR_LINKS)
 
     return collection
@@ -123,7 +127,6 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
             "end_datetime": end_datetime,
         }
         collection = 'alos_fnf_mosaic'
-
     else:
         item_id = f"{item_root}_MOS"
         properties = {
