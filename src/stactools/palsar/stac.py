@@ -8,7 +8,7 @@ from pystac import (Asset, CatalogType, Collection, Extent, Item, Link,
                     MediaType, SpatialExtent, Summaries, TemporalExtent)
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.projection import ProjectionExtension
-# from pystac.extensions.raster import RasterExtension
+from pystac.extensions.raster import RasterBand, RasterExtension
 from pystac.extensions.sar import SarExtension
 from shapely.geometry import box, mapping  # type: ignore
 
@@ -152,6 +152,9 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     if int(year) >= 15:
         item.common_metadata.platform = co.ALOS_PALSAR_PLATFORMS[1]
         item.common_metadata.instruments = [co.ALOS_PALSAR_INSTRUMENTS[1]]
+    else:
+        item.common_metadata.platform = co.ALOS_PALSAR_PLATFORMS[0]
+        item.common_metadata.instruments = [co.ALOS_PALSAR_INSTRUMENTS[0]]
     item.common_metadata.gsd = co.ALOS_PALSAR_GSD
 
     # It is a good idea to include proj attributes to optimize for libs like stac-vrt
@@ -161,11 +164,13 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     proj_attrs.shape = shape  # Raster shape
     proj_attrs.transform = transform  # Raster GeoTransform
 
-    sar = SarExtension.ext(item, add_if_missing=True)
-    sar.frequency_band = co.ALOS_FREQUENCY_BAND
-    sar.polarizations = co.ALOS_POLARIZATIONS
-    sar.instrument_mode = "FBD"
-    sar.product_type = ""
+    if os.path.basename(asset_href).split("_")[2] != "C":
+        # For MOS product use SAR extension
+        sar = SarExtension.ext(item, add_if_missing=True)
+        sar.frequency_band = co.ALOS_FREQUENCY_BAND
+        sar.polarizations = co.ALOS_POLARIZATIONS
+        sar.instrument_mode = co.ALOS_INSTRUMENT_MODE
+        sar.product_type = co.ALOS_PRODUCT_TYPE
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over
@@ -181,5 +186,27 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
                 title=key,
             ),
         )
+
+        cog_asset = item.assets[key]
+        raster = RasterExtension.ext(cog_asset, add_if_missing=True)
+        raster_band = co.ALOS_BANDS.get(key)
+        if raster_band:
+            if int(year) >= 19:
+                # NoData value changed in 2019? from 0 to 1
+                # TODO: mask band value of 0 is better for setting NoData
+                nodata_by_band = {
+                    "HH": 1,
+                    "HV": 1,
+                    "mask": 0,
+                    "linci": 1,
+                    "date": 1,
+                    "C": 0
+                }
+                nodata = nodata_by_band.get(key)
+            else:
+                nodata = 0
+            raster_band['nodata'] = nodata
+            print(raster_band)
+            raster.bands = [RasterBand.create(*raster_band)]
 
     return item

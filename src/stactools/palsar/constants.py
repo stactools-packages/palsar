@@ -4,7 +4,6 @@ from typing import Optional
 from pystac import Link, Provider
 from pystac import ProviderRole as PR
 from pystac.extensions import sar
-from pystac.extensions.eo import Band
 from pystac.extensions.item_assets import AssetDefinition
 from pystac.utils import str_to_datetime
 
@@ -46,6 +45,8 @@ ALOS_PALSAR_LINKS = [
 
 ALOS_FREQUENCY_BAND = sar.FrequencyBand.L
 ALOS_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
+ALOS_INSTRUMENT_MODE = "FBD"  # Fine Beam Dual mode
+ALOS_PRODUCT_TYPE = "GTC"  # Geometric Terrain Corrected
 
 ALOS_MOS_ASSETS = {
     "HH":
@@ -95,4 +96,31 @@ ALOS_FNF_ASSETS = {
         "description": "Forest vs Non-Forest classification",
         "role": "data"
     })
+}
+
+ALOS_BANDS = {
+    "HH": {
+        "data_type": "uint16",
+        "sampling": None,
+    },
+    "HV": {
+        "data_type": "uint16",
+        "sampling": None,
+    },
+    "linci": {
+        "data_type": "uint8",
+        "sampling": None,
+    },
+    "date": {
+        "data_type": "uint16",
+        "sampling": None,
+    },
+    "mask": {
+        "data_type": "uint8",
+        "sampling": None,
+    },
+    "C": {
+        "data_type": "uint8",
+        "sampling": None,
+    },
 }
