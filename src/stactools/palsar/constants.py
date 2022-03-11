@@ -41,7 +41,10 @@ ALOS_PALSAR_LINKS = [
           "_PALSAR2_Mosaic_FNF_revK.pdf"),
          "application/pdf",
          ALOS_DESCRIPTION,
-         extra_fields={"description": "Also includes data usage information"})
+         extra_fields={"description": "Also includes data usage information"}),
+    Link("license",
+         "https://earth.jaxa.jp/policy/en.html",
+         "JAXA Terms of Use of Research Data")
 ]
 
 ALOS_FREQUENCY_BAND = sar.FrequencyBand.L
