@@ -12,5 +12,6 @@ sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
 types-click
+types-python-dateutil
 types-pytz
 yapf==0.32.0

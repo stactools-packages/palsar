@@ -1,9 +1,9 @@
 import logging
 import os
-from datetime import datetime, timezone
 from typing import Dict
 
 import rasterio  # type: ignore
+from dateutil.parser import isoparse
 from pystac import (Asset, CatalogType, Collection, Extent, Item, Link,
                     MediaType, SpatialExtent, Summaries, TemporalExtent)
 from pystac.extensions.item_assets import ItemAssetsExtension
@@ -138,7 +138,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         id=item_id,
         geometry=geometry,
         bbox=bbox,
-        datetime=datetime.now(tz=timezone.utc),
+        datetime=isoparse(start_datetime),
         properties=properties,
         stac_extensions=[],
     )
@@ -174,7 +174,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over
-    # ["date","xml","linci", "mask", "sl_HH", "sl_HV"]
+    # ["date","xml","linci", "mask", "HH", "HV"]
     for key, value in assets_hrefs.items():
         item.add_asset(
             key,
@@ -192,8 +192,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         raster_band = co.ALOS_BANDS.get(key)
         if raster_band:
             if int(year) >= 19:
-                # NoData value changed in 2019? from 0 to 1
-                # TODO: mask band value of 0 is better for setting NoData
+                # NoData value changed in 2019 from 0 to 1 for some
                 nodata_by_band = {
                     "HH": 1,
                     "HV": 1,
