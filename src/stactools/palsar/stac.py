@@ -46,12 +46,12 @@ def create_collection(product: str) -> Collection:
     }
 
     if product == 'FNF':
-        id = "alos_fnf_mosaic"
+        id = "alos-fnf-mosaic"
         title = "ALOS Forest/Non-Forest Annual Mosaic"
         description = co.ALOS_FNF_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Forest', 'Land Cover', 'Global']
     else:
-        id = "alos_palsar_mosaic"
+        id = "alos-palsar-mosaic"
         title = "ALOS PALSAR Annual Mosaic"
         description = co.ALOS_MOS_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Remote Sensing', 'Global']
@@ -126,7 +126,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
         }
-        collection = 'alos_fnf_mosaic'
+        collection = 'alos-fnf-mosaic'
     else:
         item_id = f"{item_root}_MOS"
         properties = {
@@ -135,7 +135,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
             "start_datetime": start_datetime,
             "end_datetime": end_datetime,
         }
-        collection = 'alos_palsar_mosaic'
+        collection = 'alos-palsar-mosaic'
 
     item = Item(
         id=item_id,
