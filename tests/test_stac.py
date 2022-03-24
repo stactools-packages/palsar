@@ -17,7 +17,7 @@ class StacTest(unittest.TestCase):
         collection.set_self_href("")
 
         # Check that it has some required attributes
-        self.assertEqual(collection.id, "alos_palsar_mosaic")
+        self.assertEqual(collection.id, "alos-palsar-mosaic")
         # self.assertEqual(collection.other_attr...
 
         # Validate

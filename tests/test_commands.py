@@ -17,7 +17,7 @@ class CommandsTest(CliTestCase):
     def test_create_collection(self):
         with TemporaryDirectory() as tmp_dir:
             # Run your custom create-collection command and validate
-            destination = os.path.join(tmp_dir, "alos_palsar_mosaic")
+            destination = os.path.join(tmp_dir, "alos-palsar-mosaic")
 
             result = self.run_command(
                 ["palsar", "create-collection", "MOS", destination])
@@ -33,7 +33,7 @@ class CommandsTest(CliTestCase):
             self.assertEqual(len(jsons), 1)
 
             collection = pystac.read_file(jsons[0])
-            self.assertEqual(collection.id, "alos_palsar_mosaic")
+            self.assertEqual(collection.id, "alos-palsar-mosaic")
             # self.assertEqual(item.other_attr...
 
             collection.validate()
