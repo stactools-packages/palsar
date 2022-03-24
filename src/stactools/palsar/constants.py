@@ -62,10 +62,10 @@ ALOS_MOS_ASSETS = {
     }),
     "HV":
     AssetDefinition({
-        "title": "HH",
+        "title": "HV",
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description":
-        "HH polarization backscattering coefficient, 16-bit DN.",
+        "HV polarization backscattering coefficient, 16-bit DN.",
         "role": "data"
     }),
     "linci":
