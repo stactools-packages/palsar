@@ -29,7 +29,7 @@ def main(msg: func.QueueMessage, context: func.Context) -> None:
         source_archive_file = body[1:]
     else:
         source_archive_file = body
-        
+
     logging.info(f"{invocation_id} - Python queue trigger function processed a queue item: %s", body)
     tempdir = tempfile.mkdtemp(prefix="palsar-", dir='/home')
     logging.info(f"{invocation_id} - Created tempdir {tempdir}")
@@ -64,7 +64,7 @@ def main(msg: func.QueueMessage, context: func.Context) -> None:
             base_url = os.path.join(
                 remove_query_params_and_fragment(output_blob_service_client.url),
                 output_container_name, output_directory)
-            stac_file_path = generate_stac(tempdir, source_archive_file, cogs, base_url)
+            stac_file_path = generate_stac(tempdir, source_archive_file, cogs, base_url, invocation_id)
             logging.info(f"{invocation_id} - Generated STAC JSON at {str(stac_file_path)}")
 
             stac_url = upload_stac(upload_rootdir, output_container_name,
