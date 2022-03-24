@@ -8,7 +8,15 @@
       }
     }
   },
-  "functionTimeout": "00:10:00",
+  "functionTimeout": "00:25:00",
+  "extensions": {
+      "queues": {
+          "maxPollingInterval": "00:00:10",
+          "visibilityTimeout" : "00:00:30",
+          "maxDequeueCount": 5,
+          "messageEncoding": "base64"
+      }
+  },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[2.*, 3.0.0)"
