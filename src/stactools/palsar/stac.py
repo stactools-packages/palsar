@@ -84,7 +84,7 @@ def create_collection(product: str) -> Collection:
         version.version = co.ALOS_FNF_REVISION
     else:
         assets.item_assets = co.ALOS_MOS_ASSETS
-        version.version = co.ALOS_FNF_REVISION
+        version.version = co.ALOS_MOS_REVISION
 
     collection.add_links(co.ALOS_PALSAR_LINKS)
 
@@ -200,9 +200,9 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         raster = RasterExtension.ext(cog_asset, add_if_missing=True)
         raster_band = co.ALOS_BANDS.get(key)
         if raster_band:
-            if int(year) >= 19:
+            if int(year) >= 17:
                 # NoData value changed in 2019 from 0 to 1 for some
-                # TODO: when updating past rev K check if this is now 2017+
+                # Revision M 2017+ now matches
                 nodata_by_band = {
                     "HH": 1,
                     "HV": 1,
