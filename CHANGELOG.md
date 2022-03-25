@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Implemented handling of NoData in COGs as it differs pre 2019.
 - CLI accepts additional HREF root option
 - Added Constants for repeatable Metadata
+- Added Correction Factor (CF) for correction from Digital Number to Decibels
+- Updated to use Revision M data for 2017+
 
 ### Deprecated
 
