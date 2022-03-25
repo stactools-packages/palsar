@@ -200,7 +200,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         raster = RasterExtension.ext(cog_asset, add_if_missing=True)
         raster_band = co.ALOS_BANDS.get(key)
         if raster_band:
-            if int(year) >= 17:
+            if int(year) >= 19:
                 # NoData value changed in 2019 from 0 to 1 for some
                 # Revision M 2017+ now matches
                 nodata_by_band = {
