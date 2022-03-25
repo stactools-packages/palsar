@@ -180,6 +180,8 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         sar.polarizations = co.ALOS_POLARIZATIONS
         sar.instrument_mode = co.ALOS_INSTRUMENT_MODE
         sar.product_type = co.ALOS_PRODUCT_TYPE
+        # Append Correction Factor to convert DN to dB
+        item.properties["cf"] = co.ALOS_PALSAR_CF
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over
@@ -200,7 +202,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         raster = RasterExtension.ext(cog_asset, add_if_missing=True)
         raster_band = co.ALOS_BANDS.get(key)
         if raster_band:
-            if int(year) >= 19:
+            if int(year) >= 17:
                 # NoData value changed in 2019 from 0 to 1 for some
                 # Revision M 2017+ now matches
                 nodata_by_band = {
