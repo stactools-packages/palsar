@@ -10,6 +10,7 @@ from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterBand, RasterExtension
 from pystac.extensions.sar import SarExtension
+from pystac.extensions.version import VersionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
 from stactools.palsar import constants as co
@@ -71,14 +72,19 @@ def create_collection(product: str) -> Collection:
             SarExtension.get_schema_uri(),
             ProjectionExtension.get_schema_uri(),
             RasterExtension.get_schema_uri(),
+            VersionExtension.get_schema_uri(),
         ],
     )
+
+    version = VersionExtension.ext(collection, add_if_missing=True)
 
     assets = ItemAssetsExtension.ext(collection, add_if_missing=True)
     if product == 'FNF':
         assets.item_assets = co.ALOS_FNF_ASSETS
+        version.version = co.ALOS_FNF_REVISION
     else:
         assets.item_assets = co.ALOS_MOS_ASSETS
+        version.version = co.ALOS_FNF_REVISION
 
     collection.add_links(co.ALOS_PALSAR_LINKS)
 
@@ -196,6 +202,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         if raster_band:
             if int(year) >= 19:
                 # NoData value changed in 2019 from 0 to 1 for some
+                # TODO: when updating past rev K check if this is now 2017+
                 nodata_by_band = {
                     "HH": 1,
                     "HV": 1,

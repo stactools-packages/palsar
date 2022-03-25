@@ -22,7 +22,6 @@ ALOS_PALSAR_PLATFORMS = ["ALOS", "ALOS-2"]
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
-ALOS_PALSAR_REVISION = "K"
 ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
              roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
@@ -36,6 +35,9 @@ ALOS_DESCRIPTION = (
     "Dataset Description")
 ALOS_MOS_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Mosaic (MOS)"
 ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest Map (FNF)"
+# If you update the Revision(version), also update the handbook link
+ALOS_MOS_REVISION = "K"
+ALOS_FNF_REVISION = "K"
 ALOS_PALSAR_LINKS = [
     Link("handbook",
          ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"
