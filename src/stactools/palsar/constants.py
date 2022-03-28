@@ -12,12 +12,17 @@ from pystac.utils import str_to_datetime
 # review and adjust if implementing older data.
 
 # Time must be in UTC
-ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
+ALOS_MOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
     "2015-01-01T00:00:00Z")
-ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
+ALOS_MOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
     "2020-12-31T23:59:59Z")
-ALOS_TEMPORAL_EXTENT = [ALOS_COLLECTION_START, ALOS_COLLECTION_END]
-ALOS_SPATIAL_EXTENT = [[-180., 85., 180., -55.]]
+ALOS_FNF_COLLECTION_START: Optional[datetime] = str_to_datetime(
+    "2015-01-01T00:00:00Z")
+ALOS_FNF_COLLECTION_END: Optional[datetime] = str_to_datetime(
+    "2016-12-31T23:59:59Z")
+ALOS_MOS_TEMPORAL_EXTENT = [ALOS_MOS_COLLECTION_START, ALOS_MOS_COLLECTION_END]
+ALOS_FNF_TEMPORAL_EXTENT = [ALOS_FNF_COLLECTION_START, ALOS_FNF_COLLECTION_END]
+ALOS_SPATIAL_EXTENT = [[-180., 85., 180., -56.]]
 ALOS_PALSAR_PLATFORMS = ["ALOS", "ALOS-2"]
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters

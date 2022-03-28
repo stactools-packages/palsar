@@ -38,9 +38,6 @@ def create_collection(product: str) -> Collection:
     """
     providers = co.ALOS_PALSAR_PROVIDERS
 
-    extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
-                    TemporalExtent([co.ALOS_TEMPORAL_EXTENT]))
-
     summaries = {
         "platform": co.ALOS_PALSAR_PLATFORMS,
         "instruments": co.ALOS_PALSAR_INSTRUMENTS,
@@ -51,11 +48,15 @@ def create_collection(product: str) -> Collection:
         title = "ALOS Forest/Non-Forest Annual Mosaic"
         description = co.ALOS_FNF_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Forest', 'Land Cover', 'Global']
+        extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
+                        TemporalExtent([co.ALOS_FNF_TEMPORAL_EXTENT]))
     else:
         id = "alos-palsar-mosaic"
         title = "ALOS PALSAR Annual Mosaic"
         description = co.ALOS_MOS_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Remote Sensing', 'Global']
+        extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
+                        TemporalExtent([co.ALOS_MOS_TEMPORAL_EXTENT]))
 
     collection = Collection(
         id=id,
