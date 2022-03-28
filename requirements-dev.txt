@@ -11,6 +11,8 @@ sphinx-autobuild
 sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
+toml
 types-click
+types-python-dateutil
 types-pytz
 yapf==0.32.0

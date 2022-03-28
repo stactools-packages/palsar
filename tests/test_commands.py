@@ -5,6 +5,8 @@ import pystac
 from stactools.testing import CliTestCase
 
 from stactools.palsar.commands import create_palsar_command
+from tests import (ALOS2_PALSAR_FNF_FILENAME, ALOS2_PALSAR_MOS_2020_FILENAME,
+                   test_data)
 
 
 class CommandsTest(CliTestCase):
@@ -15,22 +17,23 @@ class CommandsTest(CliTestCase):
     def test_create_collection(self):
         with TemporaryDirectory() as tmp_dir:
             # Run your custom create-collection command and validate
-
-            # Example:
-            destination = os.path.join(tmp_dir, "collection.json")
+            destination = os.path.join(tmp_dir, "alos-palsar-mosaic")
 
             result = self.run_command(
-                ["palsar", "create-collection", destination])
+                ["palsar", "create-collection", "MOS", destination])
 
             self.assertEqual(result.exit_code,
                              0,
                              msg="\n{}".format(result.output))
 
-            jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
+            jsons = [
+                os.path.join(destination, p) for p in os.listdir(destination)
+                if p.endswith(".json")
+            ]
             self.assertEqual(len(jsons), 1)
 
-            collection = pystac.read_file(destination)
-            self.assertEqual(collection.id, "my-collection-id")
+            collection = pystac.read_file(jsons[0])
+            self.assertEqual(collection.id, "alos-palsar-mosaic")
             # self.assertEqual(item.other_attr...
 
             collection.validate()
@@ -38,14 +41,14 @@ class CommandsTest(CliTestCase):
     def test_create_item(self):
         with TemporaryDirectory() as tmp_dir:
             # Run your custom create-item command and validate
+            test_path = test_data.get_path(ALOS2_PALSAR_FNF_FILENAME)
 
-            # Example:
-            destination = os.path.join(tmp_dir, "item.json")
             result = self.run_command([
                 "palsar",
                 "create-item",
-                "/path/to/asset.tif",
-                destination,
+                test_path,
+                tmp_dir,
+                "-c",
             ])
             self.assertEqual(result.exit_code,
                              0,
@@ -54,8 +57,36 @@ class CommandsTest(CliTestCase):
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)
 
-            item = pystac.read_file(destination)
-            self.assertEqual(item.id, "my-item-id")
+            item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
+            self.assertEqual(item.id, "S16W150_15_FNF")
             # self.assertEqual(item.other_attr...
+
+            item.validate()
+
+    def test_create_item_2020(self):
+        with TemporaryDirectory() as tmp_dir:
+            # Run create item with cog conversion and override url
+            test_path = test_data.get_path(ALOS2_PALSAR_MOS_2020_FILENAME)
+
+            result = self.run_command([
+                "palsar",
+                "create-item",
+                test_path,
+                tmp_dir,
+                "-c",
+                "-u https://foo.bar",
+            ])
+            self.assertEqual(result.exit_code,
+                             0,
+                             msg="\n{}".format(result.output))
+
+            jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
+            self.assertEqual(len(jsons), 1)
+
+            item = pystac.read_file(os.path.join(tmp_dir, jsons[0]))
+            self.assertEqual(item.id, "N23W161_20_MOS")
+            # TODO: Why is there a leading space in href?
+            self.assertEqual(item.assets["date"].href.strip(),
+                             "https://foo.bar/N23W161_20_date_F02DAR.tif")
 
             item.validate()
