@@ -38,9 +38,6 @@ def create_collection(product: str) -> Collection:
     """
     providers = co.ALOS_PALSAR_PROVIDERS
 
-    extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
-                    TemporalExtent([co.ALOS_TEMPORAL_EXTENT]))
-
     summaries = {
         "platform": co.ALOS_PALSAR_PLATFORMS,
         "instruments": co.ALOS_PALSAR_INSTRUMENTS,
@@ -51,11 +48,15 @@ def create_collection(product: str) -> Collection:
         title = "ALOS Forest/Non-Forest Annual Mosaic"
         description = co.ALOS_FNF_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Forest', 'Land Cover', 'Global']
+        extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
+                        TemporalExtent([co.ALOS_FNF_TEMPORAL_EXTENT]))
     else:
         id = "alos-palsar-mosaic"
         title = "ALOS PALSAR Annual Mosaic"
         description = co.ALOS_MOS_DESCRIPTION
         keywords = ['ALOS', 'JAXA', 'Remote Sensing', 'Global']
+        extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
+                        TemporalExtent([co.ALOS_MOS_TEMPORAL_EXTENT]))
 
     collection = Collection(
         id=id,
@@ -180,6 +181,8 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         sar.polarizations = co.ALOS_POLARIZATIONS
         sar.instrument_mode = co.ALOS_INSTRUMENT_MODE
         sar.product_type = co.ALOS_PRODUCT_TYPE
+        # Append Correction Factor to convert DN to dB
+        item.properties["cf"] = co.ALOS_PALSAR_CF
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over
@@ -200,7 +203,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
         raster = RasterExtension.ext(cog_asset, add_if_missing=True)
         raster_band = co.ALOS_BANDS.get(key)
         if raster_band:
-            if int(year) >= 19:
+            if int(year) >= 17:
                 # NoData value changed in 2019 from 0 to 1 for some
                 # Revision M 2017+ now matches
                 nodata_by_band = {

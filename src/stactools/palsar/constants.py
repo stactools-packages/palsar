@@ -12,16 +12,22 @@ from pystac.utils import str_to_datetime
 # review and adjust if implementing older data.
 
 # Time must be in UTC
-ALOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
+ALOS_MOS_COLLECTION_START: Optional[datetime] = str_to_datetime(
     "2015-01-01T00:00:00Z")
-ALOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
+ALOS_MOS_COLLECTION_END: Optional[datetime] = str_to_datetime(
     "2020-12-31T23:59:59Z")
-ALOS_TEMPORAL_EXTENT = [ALOS_COLLECTION_START, ALOS_COLLECTION_END]
-ALOS_SPATIAL_EXTENT = [[-180., 90., 180., -90.]]
+ALOS_FNF_COLLECTION_START: Optional[datetime] = str_to_datetime(
+    "2015-01-01T00:00:00Z")
+ALOS_FNF_COLLECTION_END: Optional[datetime] = str_to_datetime(
+    "2016-12-31T23:59:59Z")
+ALOS_MOS_TEMPORAL_EXTENT = [ALOS_MOS_COLLECTION_START, ALOS_MOS_COLLECTION_END]
+ALOS_FNF_TEMPORAL_EXTENT = [ALOS_FNF_COLLECTION_START, ALOS_FNF_COLLECTION_END]
+ALOS_SPATIAL_EXTENT = [[-180., 85., 180., -56.]]
 ALOS_PALSAR_PLATFORMS = ["ALOS", "ALOS-2"]
 ALOS_PALSAR_INSTRUMENTS = ["PALSAR", "PALSAR-2"]
 ALOS_PALSAR_GSD = 25  # meters
 ALOS_PALSAR_EPSG = 4326
+ALOS_PALSAR_CF = "83.0 dB"
 ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
              roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
@@ -36,12 +42,12 @@ ALOS_DESCRIPTION = (
 ALOS_MOS_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Mosaic (MOS)"
 ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest Map (FNF)"
 # If you update the Revision(version), also update the handbook link
-ALOS_MOS_REVISION = "K"
-ALOS_FNF_REVISION = "K"
+ALOS_MOS_REVISION = "M"
+ALOS_FNF_REVISION = "M"
 ALOS_PALSAR_LINKS = [
     Link("handbook",
          ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"
-          "_PALSAR2_Mosaic_FNF_revK.pdf"),
+          "_PALSAR2_Mosaic_FNF_revM.pdf"),
          "application/pdf",
          ALOS_DESCRIPTION,
          extra_fields={"description": "Also includes data usage information"}),
