@@ -40,9 +40,10 @@ def cogify(tile_path: str, output_directory: str):
         else:
             band = var_split[2]
 
-        if int(var_split[1]) >= 19:
-            # NoData value changed in 2019? from 0 to 1
+        if int(var_split[1]) >= 17:
+            # NoData value changed in 2017 from 0 to 1, Revision M
             # TODO: mask band value of 0 is better for setting NoData
+            # TODO: deduplicate with stac.py
             nodata_by_band = {
                 "HH": 1,
                 "HV": 1,
