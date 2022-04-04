@@ -6,4 +6,4 @@ azure-functions
 azure-storage-blob
 azure-storage-queue
 rio-cogeo==3.0.1
-git+https://github.com/developmentseed/stactools-palsar.git@feat/cog
+git+https://github.com/developmentseed/stactools-palsar.git@main
