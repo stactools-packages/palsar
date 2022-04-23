@@ -7,7 +7,9 @@ from urllib.parse import urlsplit, urlunsplit
 
 import azure.functions as func  # type: ignore
 from azure.storage.blob import BlobServiceClient  # type: ignore
-from azure.storage.queue import QueueClient,BinaryBase64DecodePolicy,BinaryBase64EncodePolicy  # type: ignore
+from azure.storage.queue import BinaryBase64DecodePolicy  # type: ignore
+from azure.storage.queue import BinaryBase64EncodePolicy  # type: ignore
+from azure.storage.queue import QueueClient  # type: ignore
 
 from stactools.palsar import cog, stac
 
@@ -18,8 +20,9 @@ output_blob_service_client = BlobServiceClient.from_connection_string(
 processed_queue_client = QueueClient.from_connection_string(
     os.environ["ConnectionStringQueue"],
     queue_name="processed-queue",
-    message_encode_policy = BinaryBase64EncodePolicy(),
-    message_decode_policy = BinaryBase64DecodePolicy())
+    message_encode_policy=BinaryBase64EncodePolicy(),
+    message_decode_policy=BinaryBase64DecodePolicy())
+
 
 def main(msg: func.QueueMessage, context: func.Context) -> None:
     invocation_id = context.invocation_id
@@ -91,7 +94,9 @@ def main(msg: func.QueueMessage, context: func.Context) -> None:
             end_time = time.time()
             logging.info(
                 f"{invocation_id} - Runtime is {end_time - start_time}")
-            processed_queue_client.send_message(str.encode("{\"file\":\"" + source_archive_file + "\",\"invocation_id\":\"" + invocation_id + "\"}"))
+            processed_queue_client.send_message(
+                str.encode("{\"file\":\"" + source_archive_file +
+                           "\",\"invocation_id\":\"" + invocation_id + "\"}"))
             logging.info(f"{invocation_id} - All wrapped up. Exiting")
         else:
             logging.error(

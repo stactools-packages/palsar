@@ -1,19 +1,16 @@
 import os
-import tarfile
+import shutil
 from typing import List
 
 
 def extract_archive(archive: str, output_directory: str = '') -> str:
     """
-    Extract tar.gz
+    Extract tar.gz or zip
     return the folder
     """
     if output_directory == '':
-        output_directory = archive.replace('.tar.gz', '')
-
-    file = tarfile.open(archive)
-    file.extractall(output_directory)
-    file.close()
+        output_directory = archive.split('.')[0]
+    shutil.unpack_archive(archive, output_directory)
 
     return output_directory
 
