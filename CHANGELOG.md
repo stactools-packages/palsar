@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Constants for repeatable Metadata
 - Added Correction Factor (CF) for correction from Digital Number to Decibels
 - Updated to use Revision M data for 2017+
+- Handles both zip and tar.gz archives as sources
 
 ### Deprecated
 
