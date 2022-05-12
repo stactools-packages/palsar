@@ -11,10 +11,13 @@ Once a file is processed, a record is pushed to the "processed-queue" Queue for 
 
 ### Environment vars ###
 - Name: ConnectionStringInput
+
   Purpose: Connection string for the input storage account containing the blob container set by "input_container" in the python function code.
 - Name: ConnectionStringOutput
+
   Purpose: Connection string for the output storage account containing the output blob container set by "output_container_name" in the python function code.
 - Name: ConnectionStringQueue
+
   Purpose: Connection string for the storage account containing the "processed-queue" queue
   
 ### Body ###
