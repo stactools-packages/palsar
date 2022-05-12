@@ -179,19 +179,24 @@ ALOS_FNF_ASSETS = {
           },
           {
             "value": 1,
-            "name": "forest",
-            "description": "Forest"
+            "name": "forest (>90%)",
+            "description": "Forest (>90% canopy cover)"
           },
           {
             "value": 2,
+            "name": "forest (10-90%)",
+            "description": "Forest (10-90% canopy cover)"
+          },
+          {
+            "value": 3,
             "name": "non_forest",
             "description": "Non-forest"
           },
           {
-            "value": 3,
+            "value": 4,
             "name": "water",
             "description": "Water"
-          }
+          },
         ]
     })
 }
