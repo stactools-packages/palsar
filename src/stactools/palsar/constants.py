@@ -80,6 +80,61 @@ ALOS_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
 ALOS_INSTRUMENT_MODE = "FBD"  # Fine Beam Dual mode
 ALOS_PRODUCT_TYPE = "GTC"  # Geometric Terrain Corrected
 
+ALOS_MASK_CLASSIFICATION_CLASSES = [
+    {
+      "value": 0,
+      "name": "no_data",
+      "description": "No data"
+    },
+    {
+      "value": 50,
+      "name": "water",
+      "description": "Water"
+    },
+    {
+      "value": 100,
+      "name": "lay_over",
+      "description": "Lay over"
+    },
+    {
+      "value": 150,
+      "name": "shadowing",
+      "description": "Shadowing"
+    },
+    {
+      "value": 255,
+      "name": "land",
+      "description": "Land"
+    }
+]
+ALOS_FNF_CLASSIFICATION_CLASSES = [
+    {
+      "value": 0,
+      "name": "no_data",
+      "description": "No data"
+    },
+    {
+      "value": 1,
+      "name": "forest (>90%)",
+      "description": "Forest (>90% canopy cover)"
+    },
+    {
+      "value": 2,
+      "name": "forest (10-90%)",
+      "description": "Forest (10-90% canopy cover)"
+    },
+    {
+      "value": 3,
+      "name": "non_forest",
+      "description": "Non-forest"
+    },
+    {
+      "value": 4,
+      "name": "water",
+      "description": "Water"
+    },
+]
+
 ALOS_MOS_ASSETS = {
     "HH":
     AssetDefinition({
@@ -123,33 +178,7 @@ ALOS_MOS_ASSETS = {
             "data_type": "uint8"
           }
         ],
-        "classification:classes": [
-          {
-            "value": 0,
-            "name": "no_data",
-            "description": "No data"
-          },
-          {
-            "value": 50,
-            "name": "water",
-            "description": "Water"
-          },
-          {
-            "value": 100,
-            "name": "lay_over",
-            "description": "Lay over"
-          },
-          {
-            "value": 150,
-            "name": "shadowing",
-            "description": "Shadowing"
-          },
-          {
-            "value": 255,
-            "name": "land",
-            "description": "Land"
-          }
-        ]
+        "classification:classes": ALOS_MASK_CLASSIFICATION_CLASSES 
     }),
     "metadata": AssetDefinition({
         "title": "metadata",
@@ -171,33 +200,7 @@ ALOS_FNF_ASSETS = {
             "data_type": "uint8"
           }
         ],
-        "classification:classes": [
-          {
-            "value": 0,
-            "name": "no_data",
-            "description": "No data"
-          },
-          {
-            "value": 1,
-            "name": "forest (>90%)",
-            "description": "Forest (>90% canopy cover)"
-          },
-          {
-            "value": 2,
-            "name": "forest (10-90%)",
-            "description": "Forest (10-90% canopy cover)"
-          },
-          {
-            "value": 3,
-            "name": "non_forest",
-            "description": "Non-forest"
-          },
-          {
-            "value": 4,
-            "name": "water",
-            "description": "Water"
-          },
-        ]
+        "classification:classes": ALOS_FNF_CLASSIFICATION_CLASSES,
     })
 }
 
