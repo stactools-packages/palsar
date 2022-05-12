@@ -17,6 +17,8 @@ from stactools.palsar import constants as co
 
 logger = logging.getLogger(__name__)
 
+CLASSIFICATION_EXTENSION_URI = "https://stac-extensions.github.io/classification/v1.0.0/schema.json"
+
 
 def create_collection(product: str) -> Collection:
     """Create a STAC Collection
@@ -74,7 +76,7 @@ def create_collection(product: str) -> Collection:
             ProjectionExtension.get_schema_uri(),
             RasterExtension.get_schema_uri(),
             VersionExtension.get_schema_uri(),
-            "https://stac-extensions.github.io/classification/v1.0.0/schema.json",
+            CLASSIFICATION_EXTENSION_URI,
         ],
     )
 
@@ -262,5 +264,10 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
                     RasterBand.create(nodata=nodata,
                                       data_type=raster_band.get('data_type'))
                 ]
+
+            if key == "C":
+                cog_asset.extra_fields["classification:classes"] = co.ALOS_FNF_CLASSIFICATION_CLASSES
+            elif key== "mask":
+                cog_asset.extra_fields["classification:classes"] = co.ALOS_MASK_CLASSIFICATION_CLASSES
 
     return item

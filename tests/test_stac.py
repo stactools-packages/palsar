@@ -87,6 +87,8 @@ def test_mos_ver2():
     )
     assert set(item.assets) == {"HH", "HV", "date", "linci", "mask", "metadata"}
     assert item.assets["metadata"].roles == ["metadata"]
+    assert "classification:classes" in item.assets["mask"].to_dict()
+    item.validate()
 
 
 def test_fnf_ver2():
@@ -96,3 +98,5 @@ def test_fnf_ver2():
         read_href_modifier=planetary_computer.sign
     )
     assert set(item.assets) == {"C"}
+    assert "classification:classes" in item.assets["C"].to_dict()
+    item.validate()
