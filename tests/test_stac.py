@@ -77,3 +77,22 @@ class StacTest(unittest.TestCase):
             print(item_path)
             item = pystac.read_file(item_path)
             item.validate()
+
+
+def test_mos_ver2():
+    import planetary_computer
+    item = stac.create_item_from_href(
+        "https://pceo.blob.core.windows.net/palsar/v200/alos_palsar_mosaic/2021/N00E070/N00E072_21_F02DAR.xml",  # noqa: E501
+        read_href_modifier=planetary_computer.sign
+    )
+    assert set(item.assets) == {"HH", "HV", "date", "linci", "mask", "metadata"}
+    assert item.assets["metadata"].roles == ["metadata"]
+
+
+def test_fnf_ver2():
+    import planetary_computer
+    item = stac.create_item_from_href(
+        "https://pceo.blob.core.windows.net/palsar/v200/alos_fnf_mosaic/2020/N00E005/N00E006_20_C.tif",  # noqa: E501
+        read_href_modifier=planetary_computer.sign
+    )
+    assert set(item.assets) == {"C"}

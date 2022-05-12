@@ -74,6 +74,7 @@ def create_collection(product: str) -> Collection:
             ProjectionExtension.get_schema_uri(),
             RasterExtension.get_schema_uri(),
             VersionExtension.get_schema_uri(),
+            "https://stac-extensions.github.io/classification/v1.0.0/schema.json",
         ],
     )
 
@@ -83,16 +84,37 @@ def create_collection(product: str) -> Collection:
     if product == 'FNF':
         assets.item_assets = co.ALOS_FNF_ASSETS
         version.version = co.ALOS_FNF_REVISION
+        collection.add_links(co.ALOS_FNF_LINKS)
     else:
         assets.item_assets = co.ALOS_MOS_ASSETS
         version.version = co.ALOS_MOS_REVISION
-
-    collection.add_links(co.ALOS_PALSAR_LINKS)
+        collection.add_links(co.ALOS_MOS_LINKS)
 
     return collection
 
 
-def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
+def create_item_from_href(asset_href: str, read_href_modifier=None):
+    filename = os.path.basename(asset_href)
+
+    if filename.endswith("_C.tif"):
+        assets_hrefs = {"C": asset_href}
+    elif filename.endswith(".xml"):
+        prefix = asset_href.rsplit("/", 1)[0]  # like https://.../year/group/
+        filename_prefix, filename_suffix = filename.rsplit("_", 1)  # like <tile>_<year>
+        filename_suffix = os.path.splitext(filename_suffix)[0]  # like F02DAR
+
+        assets_hrefs = {
+            kind.split("_")[-1]: f"{prefix}/{filename_prefix}_{kind}_{filename_suffix}.tif"
+            for kind in ["date", "linci", "mask", "sl_HH", "sl_HV"]
+        }
+        assets_hrefs["metadata"] = asset_href
+    else:
+        raise ValueError("Unknown type")
+
+    return create_item(assets_hrefs, read_href_modifier=read_href_modifier)
+
+
+def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None) -> Item:
     """Create a STAC Item
 
     This function should include logic to extract all relevant metadata from an
@@ -106,13 +128,17 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     Returns:
         Item: STAC Item object
     """
+    if read_href_modifier is None:
+
+        def read_href_modifier(x):
+            return x
 
     # Get the general parameters from the first asset
     asset_href = list(assets_hrefs.values())[0]
     year = os.path.basename(asset_href).split("_")[1]
     item_root = '_'.join((os.path.basename(asset_href)).split("_")[0:2])
 
-    with rasterio.open(asset_href) as dataset:
+    with rasterio.open(read_href_modifier(asset_href)) as dataset:
         if dataset.crs.to_epsg() != 4326:
             raise ValueError(
                 f"Dataset {asset_href} is not EPSG:4326, which is required for ALOS data"
@@ -125,7 +151,9 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     start_datetime = f"20{year}-01-01T00:00:00Z"
     end_datetime = f"20{year}-12-31T23:59:59Z"
 
-    if os.path.basename(asset_href).split("_")[2] == "C":
+    filename = os.path.basename(os.path.splitext(asset_href)[0])
+
+    if filename.split("_")[2] == "C":
         item_id = f"{item_root}_FNF"
         properties = {
             "title": item_id,
@@ -174,7 +202,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     proj_attrs.shape = shape  # Raster shape
     proj_attrs.transform = transform  # Raster GeoTransform
 
-    if os.path.basename(asset_href).split("_")[2] != "C":
+    if collection == "alos-palsar-mosaic":
         # For MOS product use SAR extension
         sar = SarExtension.ext(item, add_if_missing=True)
         sar.frequency_band = co.ALOS_FREQUENCY_BAND
@@ -188,38 +216,51 @@ def create_item(assets_hrefs: Dict, root_href: str = '') -> Item:
     # For assets in item loop over
     # ["date","xml","linci", "mask", "HH", "HV"]
     for key, value in assets_hrefs.items():
+        if root_href:
+            href = os.path.join(root_href, os.path.basename(value))
+        else:
+            href = value
+
+        if href.endswith(".xml"):
+            media_type = MediaType.XML
+            roles = ["metadata"]
+        else:
+            media_type = MediaType.COG
+            roles = ["data"]
+
         item.add_asset(
             key,
             Asset(
                 # TODO: add relative or absolute url
-                href=os.path.join(root_href, os.path.basename(value)),
-                media_type=MediaType.COG,
-                roles=["data"],
+                href=href,
+                media_type=media_type,
+                roles=roles,
                 title=key,
             ),
         )
 
-        cog_asset = item.assets[key]
-        raster = RasterExtension.ext(cog_asset, add_if_missing=True)
-        raster_band = co.ALOS_BANDS.get(key)
-        if raster_band:
-            if int(year) >= 17:
-                # NoData value changed in 2019 from 0 to 1 for some
-                # Revision M 2017+ now matches
-                nodata_by_band = {
-                    "HH": 1,
-                    "HV": 1,
-                    "mask": 0,
-                    "linci": 1,
-                    "date": 1,
-                    "C": 0
-                }
-                nodata = nodata_by_band.get(key, 0)
-            else:
-                nodata = 0
-            raster.bands = [
-                RasterBand.create(nodata=nodata,
-                                  data_type=raster_band.get('data_type'))
-            ]
+        if item.assets[key].media_type == MediaType.COG:
+            cog_asset = item.assets[key]
+            raster = RasterExtension.ext(cog_asset, add_if_missing=True)
+            raster_band = co.ALOS_BANDS.get(key)
+            if raster_band:
+                if int(year) >= 17:
+                    # NoData value changed in 2019 from 0 to 1 for some
+                    # Revision M 2017+ now matches
+                    nodata_by_band = {
+                        "HH": 1,
+                        "HV": 1,
+                        "mask": 0,
+                        "linci": 1,
+                        "date": 1,
+                        "C": 0
+                    }
+                    nodata = nodata_by_band.get(key, 0)
+                else:
+                    nodata = 0
+                raster.bands = [
+                    RasterBand.create(nodata=nodata,
+                                      data_type=raster_band.get('data_type'))
+                ]
 
     return item
