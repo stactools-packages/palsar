@@ -48,9 +48,6 @@ ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest
 ALOS_MOS_REVISION = "2.0.0"
 ALOS_FNF_REVISION = "2.0.0"
 
-# https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_FNF_V200.pdf
-# https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_V200.pdf
-
 LICENSE_LINK = Link(
     "license",
     "https://earth.jaxa.jp/policy/en.html",
@@ -178,7 +175,7 @@ ALOS_MOS_ASSETS = {
             "data_type": "uint8"
           }
         ],
-        "classification:classes": ALOS_MASK_CLASSIFICATION_CLASSES 
+        "classification:classes": ALOS_MASK_CLASSIFICATION_CLASSES,
     }),
     "metadata": AssetDefinition({
         "title": "metadata",

@@ -96,6 +96,13 @@ def create_collection(product: str) -> Collection:
 
 
 def create_item_from_href(asset_href: str, read_href_modifier=None):
+    """
+    Create a STAC item from a single asset's HREF.
+
+    `asset_href` should be either the "C.tif" asset for the FNF mosaic,
+    or the XML metadata file.
+
+    """
     filename = os.path.basename(asset_href)
 
     if filename.endswith("_C.tif"):
