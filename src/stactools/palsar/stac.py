@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from typing import Dict
 
 import rasterio  # type: ignore
@@ -9,7 +10,8 @@ from pystac import (Asset, CatalogType, Collection, Extent, Item, Link,
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterBand, RasterExtension
-from pystac.extensions.sar import SarExtension
+from pystac.extensions.sar import SarExtension, ObservationDirection, Polarization
+from pystac.extensions.sat import SatExtension, OrbitState
 from pystac.extensions.version import VersionExtension
 from shapely.geometry import box, mapping  # type: ignore
 
@@ -18,6 +20,15 @@ from stactools.palsar import constants as co
 logger = logging.getLogger(__name__)
 
 CLASSIFICATION_EXTENSION_URI = "https://stac-extensions.github.io/classification/v1.0.0/schema.json"
+
+
+FILENAME_PARTS = re.compile(
+    r"(?P<MODE>[F|U])"
+    r"(?P<BEAM_NUMBER>\w{2})"
+    r"(?P<POLARIZATIONS>[D|Q])"
+    r"(?P<ORBIT>[A|D])"
+    r"(?P<OBSERVATION>[R|L])"
+)
 
 
 def create_collection(product: str) -> Collection:
@@ -59,6 +70,16 @@ def create_collection(product: str) -> Collection:
         keywords = ['ALOS', 'JAXA', 'Remote Sensing', 'Global']
         extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
                         TemporalExtent([co.ALOS_MOS_TEMPORAL_EXTENT]))
+        summaries = {
+            "sar:observation_direction": [ObservationDirection.LEFT.value, ObservationDirection.RIGHT.value],
+            "sar:instrument_mode": ["F", "U"],
+            "sar:polarizations": [
+                co.ALOS_DUAL_POLARIZATIONS,
+                co.ALOS_QUAD_POLARIZATIONS,
+            ],
+            "sat:orbit_state": [OrbitState.ASCENDING.value, OrbitState.DESCENDING.value],
+            "palsar:number_of_polarizations": ["D", "Q"],
+        }
 
     collection = Collection(
         id=id,
@@ -73,6 +94,7 @@ def create_collection(product: str) -> Collection:
         stac_extensions=[
             ItemAssetsExtension.get_schema_uri(),
             SarExtension.get_schema_uri(),
+            SatExtension.get_schema_uri(),
             ProjectionExtension.get_schema_uri(),
             RasterExtension.get_schema_uri(),
             VersionExtension.get_schema_uri(),
@@ -144,9 +166,16 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
 
     # Get the general parameters from the first asset
     asset_href = list(assets_hrefs.values())[0]
+    filename = os.path.basename(os.path.splitext(asset_href)[0])
     year = os.path.basename(asset_href).split("_")[1]
-    item_root = '_'.join((os.path.basename(asset_href)).split("_")[0:2])
+    is_fnf = filename.split("_")[2] == "C"
 
+    if is_fnf:
+        item_root = '_'.join((os.path.basename(asset_href)).split("_")[0:2])
+    else:
+        *a, _, b = filename.split("_")
+        item_root = "_".join(a + [b])
+        
     with rasterio.open(read_href_modifier(asset_href)) as dataset:
         if dataset.crs.to_epsg() != 4326:
             raise ValueError(
@@ -159,8 +188,6 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
 
     start_datetime = f"20{year}-01-01T00:00:00Z"
     end_datetime = f"20{year}-12-31T23:59:59Z"
-
-    filename = os.path.basename(os.path.splitext(asset_href)[0])
 
     if filename.split("_")[2] == "C":
         item_id = f"{item_root}_FNF"
@@ -214,12 +241,38 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
     if collection == "alos-palsar-mosaic":
         # For MOS product use SAR extension
         sar = SarExtension.ext(item, add_if_missing=True)
+        sat = SatExtension.ext(item, add_if_missing=True)
+        
+        palsar_parts = FILENAME_PARTS.match(filename.split("_")[-1])
+        if not palsar_parts:
+            raise ValueError(
+                f"Asset filename {filename} from href {asset_href} doesn't match the expected pattern."
+            )
+        m = palsar_parts.groupdict()
+
+        sar.instrument_mode = m["MODE"]
+        if m["OBSERVATION"] == "L":
+            sar.observation_direction = ObservationDirection.LEFT
+        else:
+            sar.observation_direction = ObservationDirection.RIGHT
+
         sar.frequency_band = co.ALOS_FREQUENCY_BAND
-        sar.polarizations = co.ALOS_POLARIZATIONS
-        sar.instrument_mode = co.ALOS_INSTRUMENT_MODE
+        if m["POLARIZATIONS"] == "D":
+            sar.polarizations = co.ALOS_DUAL_POLARIZATIONS
+        else:
+            sar.polarizations = co.ALOS_QUAD_POLARIZATIONS
+
         sar.product_type = co.ALOS_PRODUCT_TYPE
         # Append Correction Factor to convert DN to dB
         item.properties["cf"] = co.ALOS_PALSAR_CF
+
+        if m["ORBIT"] == "A":
+            sat.orbit_state = OrbitState.ASCENDING
+        else:
+            sat.orbit_state = OrbitState.DESCENDING
+
+        item.properties["palsar:beam_number"] = m["BEAM_NUMBER"]
+        item.properties["palsar:number_of_polarizations"] = m["POLARIZATIONS"]
 
     # Add an asset to the item (COG for example)
     # For assets in item loop over

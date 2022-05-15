@@ -73,8 +73,8 @@ ALOS_FNF_LINKS = [
 ]
 
 ALOS_FREQUENCY_BAND = sar.FrequencyBand.L
-ALOS_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
-ALOS_INSTRUMENT_MODE = "FBD"  # Fine Beam Dual mode
+ALOS_DUAL_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
+ALOS_QUAD_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV, sar.Polarization.VH, sar.Polarization.VV]
 ALOS_PRODUCT_TYPE = "GTC"  # Geometric Terrain Corrected
 
 ALOS_MASK_CLASSIFICATION_CLASSES = [
@@ -147,6 +147,20 @@ ALOS_MOS_ASSETS = {
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description":
         "HV polarization backscattering coefficient, 16-bit DN.",
+        "role": "data"
+    }),
+    "VH":
+    AssetDefinition({
+        "title": "VH",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "VH polarization backscattering coefficient, 16-bit DN (high-sensitive beam quad-mode only).",
+        "role": "data"
+    }),
+    "VV":
+    AssetDefinition({
+        "title": "VV",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "VV polarization backscattering coefficient, 16-bit DN (high-sensitive beam quad-mode only).",
         "role": "data"
     }),
     "linci":
