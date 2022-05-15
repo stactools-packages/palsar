@@ -133,10 +133,14 @@ def create_item_from_href(asset_href: str, read_href_modifier=None):
         prefix = asset_href.rsplit("/", 1)[0]  # like https://.../year/group/
         filename_prefix, filename_suffix = filename.rsplit("_", 1)  # like <tile>_<year>
         filename_suffix = os.path.splitext(filename_suffix)[0]  # like F02DAR
+        kinds = ["date", "linci", "mask", "sl_HH", "sl_HV"]
+        if filename_suffix[3] == "Q":
+            # "quad" mode
+            kinds.extend(["sl_VH", "sl_VV"])
 
         assets_hrefs = {
             kind.split("_")[-1]: f"{prefix}/{filename_prefix}_{kind}_{filename_suffix}.tif"
-            for kind in ["date", "linci", "mask", "sl_HH", "sl_HV"]
+            for kind in kinds
         }
         assets_hrefs["metadata"] = asset_href
     else:

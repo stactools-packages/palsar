@@ -117,6 +117,10 @@ def test_mos_quad():
     assert item.properties["sar:instrument_mode"] == "F"
     assert item.properties["sat:orbit_state"] == "ascending"
     assert item.properties["sar:observation_direction"] == "right"
+    assert set(item.assets) == {
+        "date", "linci", "mask", "HH", "HV", "VH", "VV", "metadata"
+    }
+    assert item.assets["VH"].href == "https://pceo.blob.core.windows.net/palsar/v200/alos_palsar_mosaic/2017/N20E140/N20E144_17_sl_VH_FP6QAR.tif"  # noqa: E501
 
 
 @pytest.mark.parametrize(["stem", "mode", "beam_number", "polarizations", "orbit", "observation"], [
