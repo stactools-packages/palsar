@@ -71,14 +71,17 @@ def create_collection(product: str) -> Collection:
         extent = Extent(SpatialExtent(co.ALOS_SPATIAL_EXTENT),
                         TemporalExtent([co.ALOS_MOS_TEMPORAL_EXTENT]))
         summaries = {
-            "sar:observation_direction": [ObservationDirection.LEFT.value, ObservationDirection.RIGHT.value],
-            "sar:instrument_mode": ["F", "U"],
-            "sar:polarizations": [
-                co.ALOS_DUAL_POLARIZATIONS,
-                co.ALOS_QUAD_POLARIZATIONS,
-            ],
-            "sat:orbit_state": [OrbitState.ASCENDING.value, OrbitState.DESCENDING.value],
-            "palsar:number_of_polarizations": ["D", "Q"],
+            **summaries,
+            **{
+                "sar:observation_direction": [ObservationDirection.LEFT.value, ObservationDirection.RIGHT.value],
+                "sar:instrument_mode": ["F", "U"],
+                "sar:polarizations": [
+                    co.ALOS_DUAL_POLARIZATIONS,
+                    co.ALOS_QUAD_POLARIZATIONS,
+                ],
+                "sat:orbit_state": [OrbitState.ASCENDING.value, OrbitState.DESCENDING.value],
+                "palsar:number_of_polarizations": ["D", "Q"],
+            }
         }
 
     collection = Collection(
@@ -179,7 +182,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
     else:
         *a, _, b = filename.split("_")
         item_root = "_".join(a + [b])
-        
+
     with rasterio.open(read_href_modifier(asset_href)) as dataset:
         if dataset.crs.to_epsg() != 4326:
             raise ValueError(
