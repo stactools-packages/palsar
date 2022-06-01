@@ -103,6 +103,7 @@ def test_fnf_ver2():
     assert "classification:classes" in item.assets["C"].to_dict()
     item.validate()
     assert item.id == "N00E006_20_FNF"
+    assert item.assets["C"].title == "FNF"
 
 
 def test_mos_quad():

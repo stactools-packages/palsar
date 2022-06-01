@@ -297,6 +297,11 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
             media_type = MediaType.COG
             roles = ["data"]
 
+        if is_fnf:
+            title = "FNF"
+        else:
+            title = key
+
         item.add_asset(
             key,
             Asset(
@@ -304,7 +309,7 @@ def create_item(assets_hrefs: Dict, root_href: str = '', read_href_modifier=None
                 href=href,
                 media_type=media_type,
                 roles=roles,
-                title=key,
+                title=title,
             ),
         )
 

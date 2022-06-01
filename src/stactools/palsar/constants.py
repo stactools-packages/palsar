@@ -201,7 +201,7 @@ ALOS_MOS_ASSETS = {
 ALOS_FNF_ASSETS = {
     "C":
     AssetDefinition({
-        "title": "C",
+        "title": "FNF",
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description": "Forest vs Non-Forest classification",
         "role": "data",
