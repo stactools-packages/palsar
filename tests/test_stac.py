@@ -3,6 +3,7 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac
+import pytest
 
 from stactools.palsar import cog, stac
 from tests import ALOS2_PALSAR_MOS_FILENAME, test_data
@@ -77,3 +78,61 @@ class StacTest(unittest.TestCase):
             print(item_path)
             item = pystac.read_file(item_path)
             item.validate()
+
+
+def test_mos_ver2():
+    import planetary_computer
+    item = stac.create_item_from_href(
+        "https://pceo.blob.core.windows.net/palsar/v200/alos_palsar_mosaic/2021/N00E070/N00E072_21_F02DAR.xml",  # noqa: E501
+        read_href_modifier=planetary_computer.sign
+    )
+    assert set(item.assets) == {"HH", "HV", "date", "linci", "mask", "metadata"}
+    assert item.assets["metadata"].roles == ["metadata"]
+    assert "classification:classes" in item.assets["mask"].to_dict()
+    item.validate()
+    assert item.id == "N00E072_21_F02DAR_MOS"
+
+
+def test_fnf_ver2():
+    import planetary_computer
+    item = stac.create_item_from_href(
+        "https://pceo.blob.core.windows.net/palsar/v200/alos_fnf_mosaic/2020/N00E005/N00E006_20_C.tif",  # noqa: E501
+        read_href_modifier=planetary_computer.sign
+    )
+    assert set(item.assets) == {"C"}
+    assert "classification:classes" in item.assets["C"].to_dict()
+    item.validate()
+    assert item.id == "N00E006_20_FNF"
+    assert item.assets["C"].title == "FNF"
+
+
+def test_mos_quad():
+    import planetary_computer
+    item = stac.create_item_from_href(
+        "https://pceo.blob.core.windows.net/palsar/v200/alos_palsar_mosaic/2017/N20E140/N20E144_17_FP6QAR.xml",  # noqa: E501
+        read_href_modifier=planetary_computer.sign
+    )
+    assert item.id == "N20E144_17_FP6QAR_MOS"
+    assert item.properties["palsar:beam_number"] == "P6"
+    assert item.properties["palsar:number_of_polarizations"] == "Q"
+    assert item.properties["sar:instrument_mode"] == "F"
+    assert item.properties["sat:orbit_state"] == "ascending"
+    assert item.properties["sar:observation_direction"] == "right"
+    assert set(item.assets) == {
+        "date", "linci", "mask", "HH", "HV", "VH", "VV", "metadata"
+    }
+    assert item.assets["VH"].href == "https://pceo.blob.core.windows.net/palsar/v200/alos_palsar_mosaic/2017/N20E140/N20E144_17_sl_VH_FP6QAR.tif"  # noqa: E501
+
+
+@pytest.mark.parametrize(["stem", "mode", "beam_number", "polarizations", "orbit", "observation"], [
+    ("FP6QAR", "F", "P6", "Q", "A", "R"),
+    ("F02DAR", "F", "02", "D", "A", "R"),
+    ("U02DDL", "U", "02", "D", "D", "L"),
+])
+def test_filename_parts(stem, mode, beam_number, polarizations, orbit, observation):
+    result = stac.FILENAME_PARTS.match(stem).groupdict()
+    assert result["MODE"] == mode
+    assert result["BEAM_NUMBER"] == beam_number
+    assert result["POLARIZATIONS"] == polarizations
+    assert result["ORBIT"] == orbit
+    assert result["OBSERVATION"] == observation

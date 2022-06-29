@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pystac import Link, Provider
+from pystac import Link, Provider, MediaType
 from pystac import ProviderRole as PR
 from pystac.extensions import sar
 from pystac.extensions.item_assets import AssetDefinition
@@ -32,6 +32,9 @@ ALOS_PALSAR_PROVIDERS = [
     Provider("Japan Aerospace Exploration Agency",
              roles=[PR.PRODUCER, PR.PROCESSOR, PR.LICENSOR],
              url="https://www.eorc.jaxa.jp/ALOS/en/dataset/fnf_e.htm"),
+    Provider("Development Seed",
+             roles=[PR.PROCESSOR],
+             url="https://developmentseed.org"),
     Provider("Microsoft Planetary Computer",
              roles=[PR.HOST, PR.PROCESSOR],
              url="https://planetarycomputer.microsoft.com/")
@@ -42,23 +45,92 @@ ALOS_DESCRIPTION = (
 ALOS_MOS_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Mosaic (MOS)"
 ALOS_FNF_DESCRIPTION = "Global 25 m Resolution PALSAR-2/PALSAR Forest/Non-Forest Map (FNF)"
 # If you update the Revision(version), also update the handbook link
-ALOS_MOS_REVISION = "M"
-ALOS_FNF_REVISION = "M"
-ALOS_PALSAR_LINKS = [
+ALOS_MOS_REVISION = "2.0.0"
+ALOS_FNF_REVISION = "2.0.0"
+
+LICENSE_LINK = Link(
+    "license",
+    "https://earth.jaxa.jp/policy/en.html",
+    media_type="text/html",
+    title="JAXA Terms of Use of Research Data",
+)
+
+ALOS_MOS_LINKS = [
     Link("handbook",
-         ("https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription"
-          "_PALSAR2_Mosaic_FNF_revM.pdf"),
+         "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_V200.pdf",  # noqa: E501
          "application/pdf",
-         ALOS_DESCRIPTION,
+         ALOS_MOS_DESCRIPTION,
          extra_fields={"description": "Also includes data usage information"}),
-    Link("license", "https://earth.jaxa.jp/policy/en.html",
-         "JAXA Terms of Use of Research Data")
+    LICENSE_LINK,
+]
+ALOS_FNF_LINKS = [
+    Link("handbook",
+         "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_FNF_V200.pdf",  # noqa: E501
+         "application/pdf",
+         ALOS_FNF_DESCRIPTION,
+         extra_fields={"description": "Also includes data usage information"}),
+    LICENSE_LINK,
 ]
 
 ALOS_FREQUENCY_BAND = sar.FrequencyBand.L
-ALOS_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
-ALOS_INSTRUMENT_MODE = "FBD"  # Fine Beam Dual mode
+ALOS_DUAL_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV]
+ALOS_QUAD_POLARIZATIONS = [sar.Polarization.HH, sar.Polarization.HV, sar.Polarization.VH, sar.Polarization.VV]
 ALOS_PRODUCT_TYPE = "GTC"  # Geometric Terrain Corrected
+
+ALOS_MASK_CLASSIFICATION_CLASSES = [
+    {
+      "value": 0,
+      "name": "no_data",
+      "description": "No data"
+    },
+    {
+      "value": 50,
+      "name": "water",
+      "description": "Water"
+    },
+    {
+      "value": 100,
+      "name": "lay_over",
+      "description": "Lay over"
+    },
+    {
+      "value": 150,
+      "name": "shadowing",
+      "description": "Shadowing"
+    },
+    {
+      "value": 255,
+      "name": "land",
+      "description": "Land"
+    }
+]
+ALOS_FNF_CLASSIFICATION_CLASSES = [
+    {
+      "value": 0,
+      "name": "no_data",
+      "description": "No data"
+    },
+    {
+      "value": 1,
+      "name": "forest (>90%)",
+      "description": "Forest (>90% canopy cover)"
+    },
+    {
+      "value": 2,
+      "name": "forest (10-90%)",
+      "description": "Forest (10-90% canopy cover)"
+    },
+    {
+      "value": 3,
+      "name": "non_forest",
+      "description": "Non-forest"
+    },
+    {
+      "value": 4,
+      "name": "water",
+      "description": "Water"
+    },
+]
 
 ALOS_MOS_ASSETS = {
     "HH":
@@ -75,6 +147,20 @@ ALOS_MOS_ASSETS = {
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description":
         "HV polarization backscattering coefficient, 16-bit DN.",
+        "role": "data"
+    }),
+    "VH":
+    AssetDefinition({
+        "title": "VH",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "VH polarization backscattering coefficient, 16-bit DN (high-sensitive beam quad-mode only).",
+        "role": "data"
+    }),
+    "VV":
+    AssetDefinition({
+        "title": "VV",
+        "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "description": "VV polarization backscattering coefficient, 16-bit DN (high-sensitive beam quad-mode only).",
         "role": "data"
     }),
     "linci":
@@ -96,17 +182,36 @@ ALOS_MOS_ASSETS = {
         "title": "mask",
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description": "Quality Mask",
-        "role": "data-mask"
+        "role": "data-mask",
+        "raster:bands": [
+          {
+            "nodata": 0,
+            "data_type": "uint8"
+          }
+        ],
+        "classification:classes": ALOS_MASK_CLASSIFICATION_CLASSES,
     }),
+    "metadata": AssetDefinition({
+        "title": "metadata",
+        "type": str(MediaType.XML),
+        "description": "Product metadata file",
+    })
 }
 
 ALOS_FNF_ASSETS = {
     "C":
     AssetDefinition({
-        "title": "C",
+        "title": "FNF",
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
         "description": "Forest vs Non-Forest classification",
-        "role": "data"
+        "role": "data",
+        "raster:bands": [
+          {
+            "nodata": 0,
+            "data_type": "uint8"
+          }
+        ],
+        "classification:classes": ALOS_FNF_CLASSIFICATION_CLASSES,
     })
 }
 
